@@ -11,6 +11,7 @@ gunicorn = "*"
 eventlet = "*"
 "urllib3" = {extras = ["secure"]}
 selenium = "*"
+pyyaml = "*"
 
 [dev-packages]
 
