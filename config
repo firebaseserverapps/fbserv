@@ -1,0 +1,21 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+	hideDotFiles = dotGitOnly
+[remote "github"]
+	url = https://github.com/firebaseserverapps/fbserv.git
+	fetch = +refs/heads/*:refs/remotes/github/*
+[remote "gitlab"]
+	url = https://gitlab.com/firebaseserverapps/fbserv.git
+	fetch = +refs/heads/*:refs/remotes/gitlab/*
+[user]
+	name = firebaseserverapps
+	email = firebaseserverapps@gmail.com
+	[credential "https://github.com/firebaseserverapps/fbserv.git"]
+		username = firebaseserverapps
+	[credential "https://gitlab.com/firebaseserverapps/fbserv.git"]
+		username = firebaseserverapps
