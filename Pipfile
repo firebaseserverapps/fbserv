@@ -8,6 +8,7 @@ firebase-admin = "*"
 flask = "*"
 flask-socketio = "*"
 gunicorn = "*"
+eventlet = "*"
 
 [dev-packages]
 
