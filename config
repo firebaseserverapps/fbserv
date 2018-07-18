@@ -19,3 +19,6 @@
 		username = firebaseserverapps
 	[credential "https://gitlab.com/firebaseserverapps/fbserv.git"]
 		username = firebaseserverapps
+[remote "heroku"]
+	url = https://git.heroku.com/fbserv.git
+	fetch = +refs/heads/*:refs/remotes/heroku/*
