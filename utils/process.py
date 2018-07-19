@@ -2,6 +2,8 @@ import threading
 import os
 import subprocess
 
+from utils.misc import GETANSI, ANSI_BRIGHTRED, ANSI_UNDERLINE, ANSI_ENDC
+
 class Process:
     def __init__(self,
             command,
@@ -23,6 +25,7 @@ class Process:
         self.add_cwd_to_working_dir = add_cwd_to_working_dir
         self.read_stdout_callback = read_stdout_callback
         self.read_stderr_callback = read_stderr_callback
+        self.terminated_callback = terminated_callback
         self.verbose = verbose
 
         self.cwd = os.getcwd()
@@ -137,3 +140,39 @@ class Process:
 
     def __repr__(self):
         return "[Process at {} (pid={})]".format(hex(id(self)), self.pid())
+
+def runcmd(
+        command,
+        add_cwd_to_command = False,
+        command_args = [],
+        working_dir = None,
+        add_cwd_to_working_dir = False,        
+        verbose = False,
+        color = "NONE",
+        **kwargs
+    ):
+    def read_stdout_callback(sline):
+        print("{}{}".format(GETANSI(color), sline))
+
+    def read_stderr_callback(sline):
+        print(f"{ANSI_BRIGHTRED}{sline}")
+
+    proc = Process(
+        command,
+        add_cwd_to_command = add_cwd_to_command,
+        command_args = command_args,
+        working_dir = working_dir,
+        add_cwd_to_working_dir = add_cwd_to_working_dir,        
+        read_stdout_callback = read_stdout_callback,
+        read_stderr_callback = read_stderr_callback,
+        verbose = verbose,
+        **kwargs
+    )
+
+    proc.read_stdout_thread.join()
+
+    returncode = proc.wait_for_return_code()
+
+    print(f"{ANSI_ENDC}{ANSI_UNDERLINE}{command} terminated with code {returncode}{ANSI_ENDC}")
+
+    return returncode
