@@ -31,11 +31,11 @@ def index():
 # utils
 SEP = "----------"
 def printreq(req):
-    print(SEP, "request")
+    print(f"{SEP} request -{SEP}")
     for key in list(req.__dict__.keys()):
-        if not key in ["environ", "routing_exception"]:
+        if not key in ["environ", "routing_exception", "shallow", "cookies", "view_args", "namespace"]:
             print(key, req.__dict__[key])
-    print(SEP)
+    print(f"{SEP}{SEP}{SEP}")
 #########################################################
 
 #########################################################
