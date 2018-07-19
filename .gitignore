@@ -1,4 +1,8 @@
 
 
+/cache/*
+
 __pycache__/
+
+debug.log
 

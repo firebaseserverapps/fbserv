@@ -5,28 +5,18 @@ import subprocess
 from utils.misc import GETANSI, ANSI_BRIGHTRED, ANSI_UNDERLINE, ANSI_ENDC
 
 class Process:
-    def __init__(self,
-            command,
-            add_cwd_to_command = False,
-            command_args = [],
-            working_dir = None,
-            add_cwd_to_working_dir = False,
-            read_stdout_callback = None,
-            read_stderr_callback = None,
-            terminated_callback = None,
-            verbose = False,
-            **kwargs
-        ):
+    def __init__(self, args):
 
-        self.command = command
-        self.add_cwd_to_command = add_cwd_to_command
-        self.command_args = command_args
-        self.working_dir = working_dir
-        self.add_cwd_to_working_dir = add_cwd_to_working_dir
-        self.read_stdout_callback = read_stdout_callback
-        self.read_stderr_callback = read_stderr_callback
-        self.terminated_callback = terminated_callback
-        self.verbose = verbose
+        self.args = args
+        self.command = args.get("command", None)
+        self.add_cwd_to_command = args.get("add_cwd_to_command", False)
+        self.command_args = args.get("command_args", [])
+        self.working_dir = args.get("working_dir", None)
+        self.add_cwd_to_working_dir = args.get("add_cwd_to_working_dir", False)
+        self.read_stdout_callback = args.get("read_stdout_callback", None)
+        self.read_stderr_callback = args.get("read_stderr_callback", None)
+        self.terminated_callback = args.get("terminated_callback", None)
+        self.verbose = args.get("verbose", False)
 
         self.cwd = os.getcwd()
 
@@ -48,11 +38,7 @@ class Process:
             "stderr": subprocess.PIPE,            
             "bufsize": 1,  # Line buffering
             "universal_newlines": True,        
-        }
-
-        self.kwargs = kwargs
-
-        self.popen_args.update(self.kwargs)
+        }        
 
         if not ( self.working_dir_path is None ):
             self.popen_args["cwd"] = self.working_dir_path
@@ -60,7 +46,7 @@ class Process:
         if self.verbose:
             print(f"open process {self.command_and_args}")
             print(f"working dir {self.working_dir_path}")
-            print(f"args {self.popen_args}")
+            print(f"popen args {self.popen_args}")
 
         self.process = subprocess.Popen(self.command_and_args, **self.popen_args)
 
@@ -141,38 +127,52 @@ class Process:
     def __repr__(self):
         return "[Process at {} (pid={})]".format(hex(id(self)), self.pid())
 
-def runcmd(
-        command,
-        add_cwd_to_command = False,
-        command_args = [],
-        working_dir = None,
-        add_cwd_to_working_dir = False,        
-        verbose = False,
-        color = "NONE",
-        **kwargs
-    ):
-    def read_stdout_callback(sline):
-        print("{}{}".format(GETANSI(color), sline))
+class ProcessManager:
+    def __init__(self, args):
+        self.args = args
+        self.name = args.get("name", None)
+        self.verbose = args.get("verbose", False)
+        if self.name is None:
+            self.name = args.get("command", None)
+        self.process = None
+        self.ansicolor = GETANSI(args.get("color", "BRIGHTYELLOW"))
+        self.args["read_stdout_callback"] = self.read_stdout_callback
+        self.args["read_stderr_callback"] = self.read_stderr_callback
 
-    def read_stderr_callback(sline):
-        print(f"{ANSI_BRIGHTRED}{sline}")
+    def read_stdout_callback(self, sline):
+        print("{}{} > {}".format(self.ansicolor, self.name, sline))
 
-    proc = Process(
-        command,
-        add_cwd_to_command = add_cwd_to_command,
-        command_args = command_args,
-        working_dir = working_dir,
-        add_cwd_to_working_dir = add_cwd_to_working_dir,        
-        read_stdout_callback = read_stdout_callback,
-        read_stderr_callback = read_stderr_callback,
-        verbose = verbose,
-        **kwargs
-    )
+    def read_stderr_callback(self, sline):
+        print("{}{} ! {}".format(ANSI_BRIGHTRED, self.name, sline))
 
-    proc.read_stdout_thread.join()
+    def start(self):
+        if not ( self.process is None ):
+            print("{} already started".format(self.name))        
+            return
+        self.process = Process(self.args)
 
-    returncode = proc.wait_for_return_code()
+    def stop(self):
+        if self.process is None:
+            print("{} already stopped".format(self.name))        
+            return
+        self.process.kill()
+        self.process = None
 
-    print(f"{ANSI_ENDC}{ANSI_UNDERLINE}{command} terminated with code {returncode}{ANSI_ENDC}")
+    def wait_for_return_code(self):
+        if self.process is None:
+            print("{} already stopped".format(self.name))        
+            return 0
 
-    return returncode
+        self.process.read_stdout_thread.join()
+
+        returncode = self.process.wait_for_return_code()
+
+        if self.verbose:
+            print(f"{ANSI_ENDC}{ANSI_UNDERLINE}{self.name} terminated with code {returncode}{ANSI_ENDC}")
+
+        return returncode
+
+def runcmd(args):
+    procman = ProcessManager(args)
+    procman.start()
+    return procman.wait_for_return_code()

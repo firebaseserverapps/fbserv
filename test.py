@@ -1,8 +1,9 @@
 from utils.process import runcmd
 
-runcmd(
-    "dir",
-    command_args = [".", "invaliddir"],
-    color = "BRIGHTYELLOW"
-)
+runcmd({
+    "command": "dir",
+    "command_args": [".", "invaliddir"],
+    "color": "BRIGHTYELLOW",
+    "verbose": True
+})
 
