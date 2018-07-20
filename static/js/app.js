@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-21 00:26:16
+// Transcrypt'ed from Python, 2018-07-21 01:44:21
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2251,6 +2251,14 @@ function app () {
 								return print (error);
 							}));
 						});},
+						get resetpasswordcallback () {return __get__ (this, function (self) {
+							var email = self.emailinput.getText ();
+							firebase.auth ().sendPasswordResetEmail (email).then ((function __lambda__ () {
+								return window.alert ('Password reset email has been sent to {} !'.format (email));
+							}), (function __lambda__ (error) {
+								return print (error);
+							}));
+						});},
 						get buildsignupdiv () {return __get__ (this, function (self) {
 							self.signupdiv = Div ();
 							self.emailinput = TextInput ();
@@ -2259,8 +2267,9 @@ function app () {
 							self.signoutbutton = Button ('Sign out', self.signoutcallback);
 							self.signupbutton = Button ('Sign up', self.signupcallback);
 							self.sendverificationbutton = Button ('Send verification', self.sendverificationcallback);
+							self.resetpasswordbutton = Button ('Reset password', self.resetpasswordcallback);
 							self.userinfodiv = Div ();
-							self.signupdiv.a (list ([self.emailinput, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.userinfodiv]));
+							self.signupdiv.a (list ([self.emailinput, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.resetpasswordbutton, self.userinfodiv]));
 						});},
 						get build () {return __get__ (this, function (self) {
 							self.root.innerHTML = '';
