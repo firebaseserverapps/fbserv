@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-20 11:01:16
+// Transcrypt'ed from Python, 2018-07-20 13:12:42
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2207,13 +2207,20 @@ function app () {
 				__inited__: false,
 				__init__: function (__all__) {
 					var dom = {};
+					var widgets = {};
 					var __name__ = 'client';
 					var SUBMIT_URL = __init__ (__world__.utils).SUBMIT_URL;
+					var ge = __init__ (__world__.utils).ge;
 					__nest__ (dom, '', __init__ (__world__.dom));
+					__nest__ (widgets, '', __init__ (__world__.widgets));
 					var Client = __class__ ('Client', [object], {
 						__module__: __name__,
 						get __init__ () {return __get__ (this, function (self) {
 							self.socket = null;
+							self.root = ge ('clientroot');
+						});},
+						get build () {return __get__ (this, function (self) {
+							self.root.innerHTML = '';
 						});},
 						get onconnect () {return __get__ (this, function (self) {
 							self.sioreq (dict ({'kind': 'connected'}));
@@ -2222,8 +2229,14 @@ function app () {
 							print ('->', obj);
 							self.socket.emit ('sioreq', obj);
 						});},
-						get siores () {return __get__ (this, function (self, json) {
-							print ('<-', json);
+						get siores () {return __get__ (this, function (self, obj) {
+							print ('<-', obj);
+							if (__in__ ('kind', obj)) {
+								var kind = obj ['kind'];
+								if (kind == 'connectedack') {
+									self.build ();
+								}
+							}
 						});},
 						get startup () {return __get__ (this, function (self) {
 							print ('creating socket {}'.format (SUBMIT_URL));
@@ -2236,11 +2249,13 @@ function app () {
 					__pragma__ ('<use>' +
 						'dom' +
 						'utils' +
+						'widgets' +
 					'</use>')
 					__pragma__ ('<all>')
 						__all__.Client = Client;
 						__all__.SUBMIT_URL = SUBMIT_URL;
 						__all__.__name__ = __name__;
+						__all__.ge = ge;
 					__pragma__ ('</all>')
 				}
 			}
@@ -2252,14 +2267,391 @@ function app () {
 			__all__: {
 				__inited__: false,
 				__init__: function (__all__) {
-					var utils = {};
 					var __name__ = 'dom';
-					__nest__ (utils, '', __init__ (__world__.utils));
+					var ce = __init__ (__world__.utils).ce;
+					var e = __class__ ('e', [object], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, tag) {
+							self.e = ce (tag);
+						});},
+						get bc () {return __get__ (this, function (self, color) {
+							self.e.style.backgroundColor = color;
+							return self;
+						});},
+						get cp () {return __get__ (this, function (self) {
+							self.e.style.cursor = 'pointer';
+							return self;
+						});},
+						get c () {return __get__ (this, function (self, color) {
+							self.e.style.color = color;
+							return self;
+						});},
+						get zi () {return __get__ (this, function (self, zindex) {
+							self.e.style.zIndex = zindex;
+							return self;
+						});},
+						get op () {return __get__ (this, function (self, opacity) {
+							self.e.style.opacity = opacity;
+							return self;
+						});},
+						get ms () {return __get__ (this, function (self) {
+							self.e.style.fontFamily = 'monospace';
+							return self;
+						});},
+						get a () {return __get__ (this, function (self, e) {
+							self.e.appendChild (e.e);
+							return self;
+						});},
+						get aa () {return __get__ (this, function (self, es) {
+							var __iterable0__ = es;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var e = __iterable0__ [__index0__];
+								self.a (e);
+							}
+							return self;
+						});},
+						get sa () {return __get__ (this, function (self, key, value) {
+							self.e.setAttribute (key, value);
+							return self;
+						});},
+						get ra () {return __get__ (this, function (self, key) {
+							self.e.removeAttribute (key);
+							return self;
+						});},
+						get srac () {return __get__ (this, function (self, cond, key, value) {
+							if (cond) {
+								self.sa (key, value);
+							}
+							else {
+								self.ra (key);
+							}
+						});},
+						get ga () {return __get__ (this, function (self, key) {
+							return self.e.getAttribute (key);
+						});},
+						get sv () {return __get__ (this, function (self, value) {
+							self.e.value = value;
+							return self;
+						});},
+						get html () {return __get__ (this, function (self, value) {
+							self.e.innerHTML = value;
+							return self;
+						});},
+						get x () {return __get__ (this, function (self) {
+							while (self.e.firstChild) {
+								self.e.removeChild (self.e.firstChild);
+							}
+							return self;
+						});},
+						get w () {return __get__ (this, function (self, w) {
+							self.e.style.width = w + 'px';
+							return self;
+						});},
+						get mw () {return __get__ (this, function (self, w) {
+							self.e.style.minWidth = w + 'px';
+							return self;
+						});},
+						get h () {return __get__ (this, function (self, h) {
+							self.e.style.height = h + 'px';
+							return self;
+						});},
+						get mh () {return __get__ (this, function (self, h) {
+							self.e.style.minHeight = h + 'px';
+							return self;
+						});},
+						get t () {return __get__ (this, function (self, t) {
+							self.e.style.top = t + 'px';
+							return self;
+						});},
+						get l () {return __get__ (this, function (self, l) {
+							self.e.style.left = l + 'px';
+							return self;
+						});},
+						get pv () {return __get__ (this, function (self, v) {
+							return self.l (v.x).t (v.y);
+						});},
+						get pa () {return __get__ (this, function (self) {
+							self.e.style.position = 'absolute';
+							return self;
+						});},
+						get pr () {return __get__ (this, function (self) {
+							self.e.style.position = 'relative';
+							return self;
+						});},
+						get ml () {return __get__ (this, function (self, ml) {
+							self.e.style.marginLeft = ml + 'px';
+							return self;
+						});},
+						get mr () {return __get__ (this, function (self, mr) {
+							self.e.style.marginRight = mr + 'px';
+							return self;
+						});},
+						get mt () {return __get__ (this, function (self, mt) {
+							self.e.style.marginTop = mt + 'px';
+							return self;
+						});},
+						get mb () {return __get__ (this, function (self, mb) {
+							self.e.style.marginBottom = mb + 'px';
+							return self;
+						});},
+						get ac () {return __get__ (this, function (self, klass) {
+							self.e.classList.add (klass);
+							return self;
+						});},
+						get acc () {return __get__ (this, function (self, cond, klass) {
+							if (cond) {
+								self.e.classList.add (klass);
+							}
+							return self;
+						});},
+						get aac () {return __get__ (this, function (self, klasses) {
+							var __iterable0__ = klasses;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var klass = __iterable0__ [__index0__];
+								self.e.classList.add (klass);
+							}
+							return self;
+						});},
+						get rc () {return __get__ (this, function (self, klass) {
+							self.e.classList.remove (klass);
+							return self;
+						});},
+						get arc () {return __get__ (this, function (self, cond, klass) {
+							if (cond) {
+								self.e.classList.add (klass);
+							}
+							else {
+								self.e.classList.remove (klass);
+							}
+							return self;
+						});},
+						get v () {return __get__ (this, function (self) {
+							return self.e.value;
+						});},
+						get focusme () {return __get__ (this, function (self) {
+							self.e.focus ();
+							return self;
+						});},
+						get fl () {return __get__ (this, function (self, timeout) {
+							if (typeof timeout == 'undefined' || (timeout != null && timeout .hasOwnProperty ("__kwargtrans__"))) {;
+								var timeout = 50;
+							};
+							setTimeout (self.focusme, timeout);
+							return self;
+						});},
+						get ae () {return __get__ (this, function (self, kind, callback, arg) {
+							if (typeof arg == 'undefined' || (arg != null && arg .hasOwnProperty ("__kwargtrans__"))) {;
+								var arg = false;
+							};
+							self.e.addEventListener (kind, callback, arg);
+							return self;
+						});},
+						get disable () {return __get__ (this, function (self) {
+							return self.sa ('disabled', true);
+						});},
+						get enable () {return __get__ (this, function (self) {
+							return self.ra ('disabled');
+						});},
+						get able () {return __get__ (this, function (self, able) {
+							if (able) {
+								return self.enable ();
+							}
+							return self.disable ();
+						});},
+						get fs () {return __get__ (this, function (self, size) {
+							self.e.style.fontSize = size + 'px';
+							return self;
+						});}
+					});
+					var Div = __class__ ('Div', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, klass) {
+							if (typeof klass == 'undefined' || (klass != null && klass .hasOwnProperty ("__kwargtrans__"))) {;
+								var klass = null;
+							};
+							__super__ (Div, '__init__') (self, 'div');
+							if (klass) {
+								self.ac (klass);
+							}
+						});}
+					});
+					var Span = __class__ ('Span', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, klass) {
+							if (typeof klass == 'undefined' || (klass != null && klass .hasOwnProperty ("__kwargtrans__"))) {;
+								var klass = null;
+							};
+							__super__ (Span, '__init__') (self, 'span');
+							if (klass) {
+								self.ac (klass);
+							}
+						});}
+					});
+					var Input = __class__ ('Input', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, kind) {
+							__super__ (Input, '__init__') (self, 'input');
+							self.sa ('type', kind);
+						});}
+					});
+					var Select = __class__ ('Select', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (Select, '__init__') (self, 'select');
+						});}
+					});
+					var Option = __class__ ('Option', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, key, displayname, selected) {
+							if (typeof selected == 'undefined' || (selected != null && selected .hasOwnProperty ("__kwargtrans__"))) {;
+								var selected = false;
+							};
+							__super__ (Option, '__init__') (self, 'option');
+							self.sa ('name', key);
+							self.sa ('id', key);
+							self.sv (key);
+							self.html (displayname);
+							if (selected) {
+								self.sa ('selected', true);
+							}
+						});}
+					});
+					var Slider = __class__ ('Slider', [Input], {
+						__module__: __name__,
+						get setmin () {return __get__ (this, function (self, min) {
+							self.sa ('min', min);
+							return self;
+						});},
+						get setmax () {return __get__ (this, function (self, max) {
+							self.sa ('max', max);
+							return self;
+						});},
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (Slider, '__init__') (self, 'range');
+						});}
+					});
+					var CheckBox = __class__ ('CheckBox', [Input], {
+						__module__: __name__,
+						get setchecked () {return __get__ (this, function (self, checked) {
+							self.e.checked = checked;
+							return self;
+						});},
+						get getchecked () {return __get__ (this, function (self) {
+							return self.e.checked;
+						});},
+						get __init__ () {return __get__ (this, function (self, checked) {
+							if (typeof checked == 'undefined' || (checked != null && checked .hasOwnProperty ("__kwargtrans__"))) {;
+								var checked = false;
+							};
+							__super__ (CheckBox, '__init__') (self, 'checkbox');
+							self.setchecked (checked);
+						});}
+					});
+					var TextArea = __class__ ('TextArea', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (TextArea, '__init__') (self, 'textarea');
+						});},
+						get setText () {return __get__ (this, function (self, content) {
+							self.sv (content);
+							return self;
+						});},
+						get getText () {return __get__ (this, function (self) {
+							return self.v ();
+						});}
+					});
+					var Canvas = __class__ ('Canvas', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, width, height) {
+							__super__ (Canvas, '__init__') (self, 'canvas');
+							self.width = width;
+							self.height = height;
+							self.sa ('width', self.width);
+							self.sa ('height', self.height);
+							self.ctx = self.e.getContext ('2d');
+						});},
+						get lineWidth () {return __get__ (this, function (self, linewidth) {
+							self.ctx.lineWidth = linewidth;
+						});},
+						get strokeStyle () {return __get__ (this, function (self, strokestyle) {
+							self.ctx.strokeStyle = strokestyle;
+						});},
+						get fillStyle () {return __get__ (this, function (self, fillstyle) {
+							self.ctx.fillStyle = fillstyle;
+						});},
+						get fillRect () {return __get__ (this, function (self, tlv, brv) {
+							self.ctx.fillRect (tlv.x, tlv.y, brv.m (tlv).x, brv.m (tlv).y);
+						});},
+						get py_clear () {return __get__ (this, function (self) {
+							self.ctx.clearRect (0, 0, self.width, self.height);
+						});},
+						get drawline () {return __get__ (this, function (self, fromv, tov) {
+							self.ctx.beginPath ();
+							self.ctx.moveTo (fromv.x, fromv.y);
+							self.ctx.lineTo (tov.x, tov.y);
+							self.ctx.stroke ();
+						});}
+					});
+					var Form = __class__ ('Form', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (Form, '__init__') (self, 'form');
+						});}
+					});
+					var P = __class__ ('P', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (P, '__init__') (self, 'p');
+						});}
+					});
+					var Label = __class__ ('Label', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (Label, '__init__') (self, 'label');
+						});}
+					});
+					var FileInput = __class__ ('FileInput', [Input], {
+						__module__: __name__,
+						get setmultiple () {return __get__ (this, function (self, multiple) {
+							self.srac (multiple, 'multiple', true);
+							return self;
+						});},
+						get getmultiple () {return __get__ (this, function (self) {
+							return self.ga ('multiple');
+						});},
+						get setaccept () {return __get__ (this, function (self, accept) {
+							return self.sa ('accept', accept);
+						});},
+						get getaccept () {return __get__ (this, function (self) {
+							return self.ga ('accept');
+						});},
+						get files () {return __get__ (this, function (self) {
+							return self.e.files;
+						});},
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (FileInput, '__init__') (self, 'file');
+						});}
+					});
 					__pragma__ ('<use>' +
 						'utils' +
 					'</use>')
 					__pragma__ ('<all>')
+						__all__.Canvas = Canvas;
+						__all__.CheckBox = CheckBox;
+						__all__.Div = Div;
+						__all__.FileInput = FileInput;
+						__all__.Form = Form;
+						__all__.Input = Input;
+						__all__.Label = Label;
+						__all__.Option = Option;
+						__all__.P = P;
+						__all__.Select = Select;
+						__all__.Slider = Slider;
+						__all__.Span = Span;
+						__all__.TextArea = TextArea;
 						__all__.__name__ = __name__;
+						__all__.ce = ce;
+						__all__.e = e;
 					__pragma__ ('</all>')
 				}
 			}
@@ -2280,9 +2672,17 @@ function app () {
 						var ws_scheme = 'ws://';
 					}
 					var SUBMIT_URL = ws_scheme + window.location.host;
+					var ce = function (tag) {
+						return document.createElement (tag);
+					};
+					var ge = function (id) {
+						return document.getElementById (id);
+					};
 					__pragma__ ('<all>')
 						__all__.SUBMIT_URL = SUBMIT_URL;
 						__all__.__name__ = __name__;
+						__all__.ce = ce;
+						__all__.ge = ge;
 						__all__.ws_scheme = ws_scheme;
 					__pragma__ ('</all>')
 				}
@@ -2290,6 +2690,20 @@ function app () {
 		}
 	);
 
+	__nest__ (
+		__all__,
+		'widgets', {
+			__all__: {
+				__inited__: false,
+				__init__: function (__all__) {
+					var __name__ = 'widgets';
+					__pragma__ ('<all>')
+						__all__.__name__ = __name__;
+					__pragma__ ('</all>')
+				}
+			}
+		}
+	);
 	(function () {
 		var __name__ = '__main__';
 		var Client = __init__ (__world__.client).Client;
