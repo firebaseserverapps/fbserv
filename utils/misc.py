@@ -120,7 +120,7 @@ def os_stats_as_dict(stats, name, isdir):
         "st_ctime": stats.st_ctime
     }
 
-def dir_listing_as_obj(path):
+def dir_listing_as_list(path):
     try:
         listing = []
         for name in os.listdir(path):            
@@ -131,6 +131,13 @@ def dir_listing_as_obj(path):
         return listing
     except:
         return []
+
+def dir_listing_as_dict(path):
+    listing = dir_listing_as_list(path)
+    dictionary = {}
+    for item in listing:
+        dictionary[item["name"]] = item
+    return dictionary
 
 def getlastmod(path):
     try:
