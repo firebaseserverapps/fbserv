@@ -1,9 +1,3 @@
-from utils.process import runcmd
+from utils.misc import read_yaml_from_file
 
-runcmd({
-    "command": "dir",
-    "command_args": [".", "invaliddir"],
-    "color": "BRIGHTYELLOW",
-    "verbose": True
-})
-
+print(read_yaml_from_file("firebase/fbcreds.yml", None))

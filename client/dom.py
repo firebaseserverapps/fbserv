@@ -255,6 +255,12 @@ class Input(e):
         super().__init__("input")
         self.sa("type", kind)
 
+class Button(Input):
+    def __init__(self, caption, callback):
+        super().__init__("button")
+        self.sa("value", caption)
+        self.ae("mousedown", callback)
+
 class Select(e):
     def __init__(self):
         super().__init__("select")
@@ -292,6 +298,28 @@ class CheckBox(Input):
     def __init__(self, checked = False):
         super().__init__("checkbox")
         self.setchecked(checked)
+
+class TextInput(Input):
+    def __init__(self):
+        super().__init__("text")
+
+    def setText(self, content):
+        self.sv(content)
+        return self
+
+    def getText(self):
+        return self.v()
+
+class PasswordInput(Input):
+    def __init__(self):
+        super().__init__("password")
+
+    def setText(self, content):
+        self.sv(content)
+        return self
+
+    def getText(self):
+        return self.v()
 
 class TextArea(e):
     def __init__(self):

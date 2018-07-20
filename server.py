@@ -1,4 +1,5 @@
 import random
+from utils.misc import read_yaml_from_file
 
 #########################################################
 # flask imports
@@ -51,7 +52,11 @@ def handle_sioreq(json):
     if "kind" in json:
         kind = json["kind"]
         if kind == "connected":
-            socketio.emit("siores", {"kind": "connectedack"}, room = request.sid, namespace = "/")
+            firebaseconfig = read_yaml_from_file("firebase/fbcreds.yml", {})
+            socketio.emit("siores", {
+                "kind": "connectedack",
+                "firebaseconfig": firebaseconfig
+            }, room = request.sid, namespace = "/")
 #########################################################
 
 #########################################################
