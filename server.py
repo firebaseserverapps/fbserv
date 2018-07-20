@@ -1,3 +1,5 @@
+import random
+
 #########################################################
 # flask imports
 from flask import Flask, render_template, request
@@ -20,14 +22,6 @@ socketio = SocketIO(app)
 #########################################################
 
 #########################################################
-# app routes
-@app.route("/")
-def index():
-    printreq(request)
-    return render_template("index.html")
-#########################################################
-
-#########################################################
 # utils
 SEP = "----------"
 def printreq(req):
@@ -36,6 +30,17 @@ def printreq(req):
         if not key in ["environ", "routing_exception", "shallow", "cookies", "view_args", "namespace"]:
             print(key, req.__dict__[key])
     print(f"{SEP}{SEP}{SEP}")
+
+def randurl():
+    return random.randint(1e9,1e10)
+#########################################################
+
+#########################################################
+# app routes
+@app.route("/")
+def index():
+    printreq(request)
+    return render_template("index.html", randurl = randurl)
 #########################################################
 
 #########################################################

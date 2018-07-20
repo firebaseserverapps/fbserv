@@ -1,5 +1,9 @@
 
 
+/client/__javascript__/*
+/client/app.js
+
+
 /cache/*
 
 __pycache__/

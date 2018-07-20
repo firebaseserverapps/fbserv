@@ -1,5 +1,6 @@
 import os
 import yaml
+import stat
 
 ###################################################
 # misc
@@ -96,8 +97,15 @@ def read_yaml_from_file(path, default):
         return default
 
 def os_stats_as_dict(stats, name, isdir):
+    parts = name.split(".")
+    ext = parts[-1]
+    basename = name
+    if len(parts) > 1:
+        basename = ".".join(parts[:-1])
     return {
         "name": name,
+        "basename": basename,
+        "ext": ext,
         "isdir": isdir,
         "st_mode": stats.st_mode,
         "st_mode_unix_rwx": stat.filemode(stats.st_mode),
@@ -113,10 +121,23 @@ def os_stats_as_dict(stats, name, isdir):
     }
 
 def dir_listing_as_obj(path):
-    return [os_stats_as_dict(os.stat(os.path.join(path, name)), name, os.path.isdir(os.path.join(path, name))) for name in os.listdir(path)]
+    try:
+        listing = []
+        for name in os.listdir(path):            
+            currpath = os.path.join(path, name)
+            stats = os.stat(currpath)
+            isdir = os.path.isdir(currpath)
+            listing.append(os_stats_as_dict(stats, name, isdir))
+        return listing
+    except:
+        return []
 
 def getlastmod(path):
-    stat = os.stat(path)
-    return stat.st_mtime
+    try:
+        stats = os.stat(path)
+        mtime = stats.st_mtime
+        return mtime
+    except:
+        return 0
 
 #############################################

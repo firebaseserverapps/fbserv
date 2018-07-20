@@ -136,6 +136,7 @@ class ProcessManager:
             self.name = args.get("command", None)
         self.process = None
         self.ansicolor = GETANSI(args.get("color", "BRIGHTYELLOW"))
+        print(self.ansicolor, end = "")
         self.args["read_stdout_callback"] = self.read_stdout_callback
         self.args["read_stderr_callback"] = self.read_stderr_callback
 
