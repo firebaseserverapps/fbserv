@@ -1,20 +1,27 @@
-import utils
+from utils import SUBMIT_URL
 import dom
 
-def startup():
-    print("creating socket for submit url [ {} ]".format(utils.SUBMIT_URL))
+class Client:
+    def __init__(self):
+        self.socket = None
 
-    socket = io.connect(utils.SUBMIT_URL)
+    def onconnect(self):
+        self.sioreq({"kind": "connected"})
 
-    print("socket created ok")
+    def sioreq(self, obj):
+        print("->", obj)
+        self.socket.emit("sioreq", obj)    
 
-    def onconnect():
-        print("socket connected ok")
-        socket.emit("sioreq", {"kind": "connected"})
+    def siores(self, json):
+        print("<-", json)
 
-    def onevent(json):
-        print(json)
+    def startup(self):
+        print("creating socket {}".format(SUBMIT_URL))
 
-    socket.on('connect', onconnect)
-    socket.on('siores', lambda json: onevent(json))
+        self.socket = io.connect(SUBMIT_URL)
+
+        print("socket created ok")        
+
+        self.socket.on('connect', self.onconnect)
+        self.socket.on('siores', self.siores)
 

@@ -1,3 +1,3 @@
-import client
+from client import Client
 
-client.startup()
+Client().startup()
