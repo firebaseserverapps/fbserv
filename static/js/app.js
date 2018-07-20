@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-20 20:45:48
+// Transcrypt'ed from Python, 2018-07-21 00:26:16
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2210,6 +2210,9 @@ function app () {
 					var SUBMIT_URL = __init__ (__world__.utils).SUBMIT_URL;
 					var ge = __init__ (__world__.utils).ge;
 					var Div = __init__ (__world__.dom).Div;
+					var TextInput = __init__ (__world__.dom).TextInput;
+					var PasswordInput = __init__ (__world__.dom).PasswordInput;
+					var Button = __init__ (__world__.dom).Button;
 					var TabPane = __init__ (__world__.widgets).TabPane;
 					var Tab = __init__ (__world__.widgets).Tab;
 					var Client = __class__ ('Client', [object], {
@@ -2218,9 +2221,51 @@ function app () {
 							self.socket = null;
 							self.root = ge ('clientroot');
 						});},
+						get signincallback () {return __get__ (this, function (self) {
+							var email = self.emailinput.getText ();
+							var password = self.passwordinput.getText ();
+							print ('signing in user with', email, password);
+							firebase.auth ().signInWithEmailAndPassword (email, password).catch ((function __lambda__ (error) {
+								return print (error);
+							}));
+						});},
+						get signoutcallback () {return __get__ (this, function (self) {
+							if (firebase.auth ().currentUser) {
+								print ('signing out');
+								firebase.auth ().signOut ();
+							}
+							else {
+								print ('already signed out');
+							}
+						});},
+						get signupcallback () {return __get__ (this, function (self) {
+							var email = self.emailinput.getText ();
+							var password = self.passwordinput.getText ();
+							print ('signing up user with', email, password);
+							firebase.auth ().createUserWithEmailAndPassword (email, password).catch ((function __lambda__ (error) {
+								return print (error);
+							}));
+						});},
+						get sendverificationcallback () {return __get__ (this, function (self) {
+							firebase.auth ().currentUser.sendEmailVerification ().catch ((function __lambda__ (error) {
+								return print (error);
+							}));
+						});},
+						get buildsignupdiv () {return __get__ (this, function (self) {
+							self.signupdiv = Div ();
+							self.emailinput = TextInput ();
+							self.passwordinput = PasswordInput ();
+							self.signinbutton = Button ('Sign in', self.signincallback);
+							self.signoutbutton = Button ('Sign out', self.signoutcallback);
+							self.signupbutton = Button ('Sign up', self.signupcallback);
+							self.sendverificationbutton = Button ('Send verification', self.sendverificationcallback);
+							self.userinfodiv = Div ();
+							self.signupdiv.a (list ([self.emailinput, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.userinfodiv]));
+						});},
 						get build () {return __get__ (this, function (self) {
 							self.root.innerHTML = '';
-							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))])}));
+							self.buildsignupdiv ();
+							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), Tab ('profile', 'Profile', self.signupdiv), Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'profile'}));
 							self.root.appendChild (self.mainelement.e);
 						});},
 						get onconnect () {return __get__ (this, function (self) {
@@ -2230,12 +2275,35 @@ function app () {
 							print ('->', obj);
 							self.socket.emit ('sioreq', obj);
 						});},
+						get authstatechanged () {return __get__ (this, function (self, user) {
+							self.user = user;
+							if (user) {
+								self.displayName = user.displayName;
+								self.email = user.email;
+								self.emailVerified = user.emailVerified;
+								self.photoURL = user.photoURL;
+								self.isAnonymous = user.isAnonymous;
+								self.uid = user.uid;
+								self.providerData = user.providerData;
+								print ('user', self.email);
+								self.userinfodiv.ms ().html ('email: {}<br>verified: {}<br>uid: {}<br>'.format (self.email, self.emailVerified, self.uid));
+								self.emailinput.setText (self.email);
+							}
+							else {
+								print ('no user');
+								self.userinfodiv.x ();
+							}
+						});},
 						get siores () {return __get__ (this, function (self, obj) {
 							print ('<-', obj);
 							if (__in__ ('kind', obj)) {
 								var kind = obj ['kind'];
 								if (kind == 'connectedack') {
 									self.build ();
+									self.firebaseconfig = obj ['firebaseconfig'];
+									print ('initializing firebase from', self.firebaseconfig);
+									firebase.initializeApp (self.firebaseconfig);
+									firebase.auth ().onAuthStateChanged (self.authstatechanged);
 								}
 							}
 						});},
@@ -2253,11 +2321,14 @@ function app () {
 						'widgets' +
 					'</use>')
 					__pragma__ ('<all>')
+						__all__.Button = Button;
 						__all__.Client = Client;
 						__all__.Div = Div;
+						__all__.PasswordInput = PasswordInput;
 						__all__.SUBMIT_URL = SUBMIT_URL;
 						__all__.Tab = Tab;
 						__all__.TabPane = TabPane;
+						__all__.TextInput = TextInput;
 						__all__.__name__ = __name__;
 						__all__.ge = ge;
 					__pragma__ ('</all>')
@@ -2520,6 +2591,14 @@ function app () {
 							self.sa ('type', kind);
 						});}
 					});
+					var Button = __class__ ('Button', [Input], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, caption, callback) {
+							__super__ (Button, '__init__') (self, 'button');
+							self.sa ('value', caption);
+							self.ae ('mousedown', callback);
+						});}
+					});
 					var Select = __class__ ('Select', [e], {
 						__module__: __name__,
 						get __init__ () {return __get__ (this, function (self) {
@@ -2571,6 +2650,32 @@ function app () {
 							};
 							__super__ (CheckBox, '__init__') (self, 'checkbox');
 							self.setchecked (checked);
+						});}
+					});
+					var TextInput = __class__ ('TextInput', [Input], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (TextInput, '__init__') (self, 'text');
+						});},
+						get setText () {return __get__ (this, function (self, content) {
+							self.sv (content);
+							return self;
+						});},
+						get getText () {return __get__ (this, function (self) {
+							return self.v ();
+						});}
+					});
+					var PasswordInput = __class__ ('PasswordInput', [Input], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (PasswordInput, '__init__') (self, 'password');
+						});},
+						get setText () {return __get__ (this, function (self, content) {
+							self.sv (content);
+							return self;
+						});},
+						get getText () {return __get__ (this, function (self) {
+							return self.v ();
 						});}
 					});
 					var TextArea = __class__ ('TextArea', [e], {
@@ -2662,6 +2767,7 @@ function app () {
 						'utils' +
 					'</use>')
 					__pragma__ ('<all>')
+						__all__.Button = Button;
 						__all__.Canvas = Canvas;
 						__all__.CheckBox = CheckBox;
 						__all__.Div = Div;
@@ -2671,10 +2777,12 @@ function app () {
 						__all__.Label = Label;
 						__all__.Option = Option;
 						__all__.P = P;
+						__all__.PasswordInput = PasswordInput;
 						__all__.Select = Select;
 						__all__.Slider = Slider;
 						__all__.Span = Span;
 						__all__.TextArea = TextArea;
+						__all__.TextInput = TextInput;
 						__all__.__name__ = __name__;
 						__all__.ce = ce;
 						__all__.e = e;
