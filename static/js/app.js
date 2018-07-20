@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-20 16:57:55
+// Transcrypt'ed from Python, 2018-07-20 20:45:48
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2206,12 +2206,12 @@ function app () {
 			__all__: {
 				__inited__: false,
 				__init__: function (__all__) {
-					var dom = {};
 					var __name__ = 'client';
 					var SUBMIT_URL = __init__ (__world__.utils).SUBMIT_URL;
 					var ge = __init__ (__world__.utils).ge;
-					__nest__ (dom, '', __init__ (__world__.dom));
-					var SplitPane = __init__ (__world__.widgets).SplitPane;
+					var Div = __init__ (__world__.dom).Div;
+					var TabPane = __init__ (__world__.widgets).TabPane;
+					var Tab = __init__ (__world__.widgets).Tab;
 					var Client = __class__ ('Client', [object], {
 						__module__: __name__,
 						get __init__ () {return __get__ (this, function (self) {
@@ -2220,8 +2220,7 @@ function app () {
 						});},
 						get build () {return __get__ (this, function (self) {
 							self.root.innerHTML = '';
-							self.mainelement = SplitPane (dict ({'fillwindow': true}));
-							self.mainelement.setcontentelement (SplitPane ());
+							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))])}));
 							self.root.appendChild (self.mainelement.e);
 						});},
 						get onconnect () {return __get__ (this, function (self) {
@@ -2255,8 +2254,10 @@ function app () {
 					'</use>')
 					__pragma__ ('<all>')
 						__all__.Client = Client;
+						__all__.Div = Div;
 						__all__.SUBMIT_URL = SUBMIT_URL;
-						__all__.SplitPane = SplitPane;
+						__all__.Tab = Tab;
+						__all__.TabPane = TabPane;
 						__all__.__name__ = __name__;
 						__all__.ge = ge;
 					__pragma__ ('</all>')
@@ -2264,7 +2265,6 @@ function app () {
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'dom', {
@@ -2383,6 +2383,10 @@ function app () {
 							self.e.style.position = 'relative';
 							return self;
 						});},
+						get pad () {return __get__ (this, function (self, pad) {
+							self.e.style.padding = pad + 'px';
+							return self;
+						});},
 						get ml () {return __get__ (this, function (self, ml) {
 							self.e.style.marginLeft = ml + 'px';
 							return self;
@@ -2397,6 +2401,22 @@ function app () {
 						});},
 						get mb () {return __get__ (this, function (self, mb) {
 							self.e.style.marginBottom = mb + 'px';
+							return self;
+						});},
+						get pl () {return __get__ (this, function (self, pl) {
+							self.e.style.paddingLeft = pl + 'px';
+							return self;
+						});},
+						get par () {return __get__ (this, function (self, pr) {
+							self.e.style.paddingRight = pr + 'px';
+							return self;
+						});},
+						get pt () {return __get__ (this, function (self, pt) {
+							self.e.style.paddingTop = pt + 'px';
+							return self;
+						});},
+						get pb () {return __get__ (this, function (self, pb) {
+							self.e.style.paddingBottom = pb + 'px';
 							return self;
 						});},
 						get ac () {return __get__ (this, function (self, klass) {
@@ -2725,9 +2745,9 @@ function app () {
 					var SplitPane = __class__ ('SplitPane', [e], {
 						__module__: __name__,
 						get resize () {return __get__ (this, function (self, width, height) {
-							self.width = width;
+							self.width = max (width, self.minwidth);
 							self.height = height;
-							self.contentheight = max (self.height - self.controlheight, 200);
+							self.contentheight = max (self.height - self.controlheight, self.mincontentheight);
 							self.height = self.controlheight + self.contentheight;
 							self.container.w (self.width).h (self.height);
 							self.controlpanel.w (self.width).h (self.controlheight);
@@ -2742,13 +2762,16 @@ function app () {
 							catch (__except0__) {
 								// pass;
 							}
+							return self;
 						});},
 						get setcontentelement () {return __get__ (this, function (self, contentelement) {
 							self.contentelement = contentelement;
 							self.resize (self.width, self.height);
+							return self;
 						});},
 						get resizetowindow () {return __get__ (this, function (self) {
 							self.resize (window.innerWidth, window.innerHeight);
+							return self;
 						});},
 						get __init__ () {return __get__ (this, function (self, args) {
 							if (typeof args == 'undefined' || (args != null && args .hasOwnProperty ("__kwargtrans__"))) {;
@@ -2761,6 +2784,8 @@ function app () {
 							self.contentdiv = Div (list (['splitpane', 'contentdiv']));
 							self.container.a (list ([self.controlpanel, self.contentdiv]));
 							self.contentelement = Div ();
+							self.minwidth = args.py_get ('minwidth', 400);
+							self.mincontentheight = args.py_get ('mincontentheight', 200);
 							self.resize (args.py_get ('width', 600), args.py_get ('height', 400));
 							self.fillwindow = args.py_get ('fillwindow', false);
 							if (self.fillwindow) {
@@ -2770,6 +2795,75 @@ function app () {
 							self.a (self.container);
 						});}
 					});
+					var Tab = __class__ ('Tab', [e], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, key, displayname, element) {
+							__super__ (Tab, '__init__') (self, 'div');
+							self.key = key;
+							self.displayname = displayname;
+							self.element = element;
+							self.container = Div (list (['tab', 'container', 'noselect'])).html (displayname);
+							self.a (self.container);
+						});}
+					});
+					var TabPane = __class__ ('TabPane', [SplitPane], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self, args) {
+							if (typeof args == 'undefined' || (args != null && args .hasOwnProperty ("__kwargtrans__"))) {;
+								var args = dict ({});
+							};
+							args ['controlheight'] = args.py_get ('controlheight', 35);
+							__super__ (TabPane, '__init__') (self, args);
+							self.tabmargin = args.py_get ('tabmargin', 5);
+							self.tabpadding = args.py_get ('tabpadding', 5);
+							self.tabs = args.py_get ('tabs', list ([]));
+							self.settabs (self.tabs);
+							self.tabheight = self.controlheight - 2 * (self.tabmargin + self.tabpadding);
+							self.tabfontsize = self.tabheight;
+							self.id = args.py_get ('id', null);
+							self.selected = args.py_get ('selected', null);
+							if (self.id) {
+								var stored = localStorage.getItem (self.id);
+								if (stored) {
+									self.selected = stored;
+								}
+							}
+							self.build ();
+						});},
+						get tabclickedfactory () {return __get__ (this, function (self, tab) {
+							var tabclicked = function () {
+								self.selected = tab.key;
+								if (self.id) {
+									localStorage.setItem (self.id, self.selected);
+								}
+								self.build ();
+							};
+							return tabclicked;
+						});},
+						get settabs () {return __get__ (this, function (self, tabs) {
+							self.tabs = tabs;
+							var __iterable0__ = self.tabs;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var tab = __iterable0__ [__index0__];
+								tab.ae ('mousedown', self.tabclickedfactory (tab));
+							}
+							return self;
+						});},
+						get build () {return __get__ (this, function (self) {
+							self.controlpanel.x ();
+							var __iterable0__ = self.tabs;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var tab = __iterable0__ [__index0__];
+								tab.container.h (self.tabheight).pad (self.tabpadding).pl (2 * self.tabpadding).par (2 * self.tabpadding);
+								self.controlpanel.a (tab);
+								tab.container.arc (tab.key == self.selected, 'selected').fs (self.tabfontsize);
+								if (tab.key == self.selected) {
+									self.setcontentelement (tab.element);
+								}
+							}
+							return self;
+						});}
+					});
 					__pragma__ ('<use>' +
 						'dom' +
 						'utils' +
@@ -2777,6 +2871,8 @@ function app () {
 					__pragma__ ('<all>')
 						__all__.Div = Div;
 						__all__.SplitPane = SplitPane;
+						__all__.Tab = Tab;
+						__all__.TabPane = TabPane;
 						__all__.__name__ = __name__;
 						__all__.e = e;
 						__all__.getScrollBarWidth = getScrollBarWidth;
@@ -2785,6 +2881,7 @@ function app () {
 			}
 		}
 	);
+
 	(function () {
 		var __name__ = '__main__';
 		var Client = __init__ (__world__.client).Client;
