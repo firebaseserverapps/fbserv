@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-20 01:57:10
+// Transcrypt'ed from Python, 2018-07-20 11:01:16
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2207,33 +2207,40 @@ function app () {
 				__inited__: false,
 				__init__: function (__all__) {
 					var dom = {};
-					var utils = {};
 					var __name__ = 'client';
-					__nest__ (utils, '', __init__ (__world__.utils));
+					var SUBMIT_URL = __init__ (__world__.utils).SUBMIT_URL;
 					__nest__ (dom, '', __init__ (__world__.dom));
-					var startup = function () {
-						print ('creating socket for submit url [ {} ]'.format (utils.SUBMIT_URL));
-						var socket = io.connect (utils.SUBMIT_URL);
-						print ('socket created ok');
-						var onconnect = function () {
-							print ('socket connected ok');
-							socket.emit ('sioreq', dict ({'kind': 'connected'}));
-						};
-						var onevent = function (json) {
-							print (json);
-						};
-						socket.on ('connect', onconnect);
-						socket.on ('siores', (function __lambda__ (json) {
-							return onevent (json);
-						}));
-					};
+					var Client = __class__ ('Client', [object], {
+						__module__: __name__,
+						get __init__ () {return __get__ (this, function (self) {
+							self.socket = null;
+						});},
+						get onconnect () {return __get__ (this, function (self) {
+							self.sioreq (dict ({'kind': 'connected'}));
+						});},
+						get sioreq () {return __get__ (this, function (self, obj) {
+							print ('->', obj);
+							self.socket.emit ('sioreq', obj);
+						});},
+						get siores () {return __get__ (this, function (self, json) {
+							print ('<-', json);
+						});},
+						get startup () {return __get__ (this, function (self) {
+							print ('creating socket {}'.format (SUBMIT_URL));
+							self.socket = io.connect (SUBMIT_URL);
+							print ('socket created ok');
+							self.socket.on ('connect', self.onconnect);
+							self.socket.on ('siores', self.siores);
+						});}
+					});
 					__pragma__ ('<use>' +
 						'dom' +
 						'utils' +
 					'</use>')
 					__pragma__ ('<all>')
+						__all__.Client = Client;
+						__all__.SUBMIT_URL = SUBMIT_URL;
 						__all__.__name__ = __name__;
-						__all__.startup = startup;
 					__pragma__ ('</all>')
 				}
 			}
@@ -2284,14 +2291,14 @@ function app () {
 	);
 
 	(function () {
-		var client = {};
 		var __name__ = '__main__';
-		__nest__ (client, '', __init__ (__world__.client));
-		client.startup ();
+		var Client = __init__ (__world__.client).Client;
+		Client ().startup ();
 		__pragma__ ('<use>' +
 			'client' +
 		'</use>')
 		__pragma__ ('<all>')
+			__all__.Client = Client;
 			__all__.__name__ = __name__;
 		__pragma__ ('</all>')
 	}) ();
