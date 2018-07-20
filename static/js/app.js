@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-20 13:12:42
+// Transcrypt'ed from Python, 2018-07-20 16:57:55
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2207,12 +2207,11 @@ function app () {
 				__inited__: false,
 				__init__: function (__all__) {
 					var dom = {};
-					var widgets = {};
 					var __name__ = 'client';
 					var SUBMIT_URL = __init__ (__world__.utils).SUBMIT_URL;
 					var ge = __init__ (__world__.utils).ge;
 					__nest__ (dom, '', __init__ (__world__.dom));
-					__nest__ (widgets, '', __init__ (__world__.widgets));
+					var SplitPane = __init__ (__world__.widgets).SplitPane;
 					var Client = __class__ ('Client', [object], {
 						__module__: __name__,
 						get __init__ () {return __get__ (this, function (self) {
@@ -2221,6 +2220,9 @@ function app () {
 						});},
 						get build () {return __get__ (this, function (self) {
 							self.root.innerHTML = '';
+							self.mainelement = SplitPane (dict ({'fillwindow': true}));
+							self.mainelement.setcontentelement (SplitPane ());
+							self.root.appendChild (self.mainelement.e);
 						});},
 						get onconnect () {return __get__ (this, function (self) {
 							self.sioreq (dict ({'kind': 'connected'}));
@@ -2254,6 +2256,7 @@ function app () {
 					__pragma__ ('<all>')
 						__all__.Client = Client;
 						__all__.SUBMIT_URL = SUBMIT_URL;
+						__all__.SplitPane = SplitPane;
 						__all__.__name__ = __name__;
 						__all__.ge = ge;
 					__pragma__ ('</all>')
@@ -2261,6 +2264,7 @@ function app () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'dom', {
@@ -2298,15 +2302,16 @@ function app () {
 							self.e.style.fontFamily = 'monospace';
 							return self;
 						});},
-						get a () {return __get__ (this, function (self, e) {
-							self.e.appendChild (e.e);
-							return self;
-						});},
-						get aa () {return __get__ (this, function (self, es) {
-							var __iterable0__ = es;
-							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
-								var e = __iterable0__ [__index0__];
-								self.a (e);
+						get a () {return __get__ (this, function (self, element) {
+							if (Array.isArray (element)) {
+								var __iterable0__ = element;
+								for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+									var eitem = __iterable0__ [__index0__];
+									self.e.appendChild (eitem.e);
+								}
+							}
+							else {
+								self.e.appendChild (element.e);
 							}
 							return self;
 						});},
@@ -2395,19 +2400,20 @@ function app () {
 							return self;
 						});},
 						get ac () {return __get__ (this, function (self, klass) {
-							self.e.classList.add (klass);
-							return self;
-						});},
-						get acc () {return __get__ (this, function (self, cond, klass) {
-							if (cond) {
+							if (Array.isArray (klass)) {
+								var __iterable0__ = klass;
+								for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+									var classitem = __iterable0__ [__index0__];
+									self.e.classList.add (classitem);
+								}
+							}
+							else {
 								self.e.classList.add (klass);
 							}
 							return self;
 						});},
-						get aac () {return __get__ (this, function (self, klasses) {
-							var __iterable0__ = klasses;
-							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
-								var klass = __iterable0__ [__index0__];
+						get acc () {return __get__ (this, function (self, cond, klass) {
+							if (cond) {
 								self.e.classList.add (klass);
 							}
 							return self;
@@ -2678,11 +2684,27 @@ function app () {
 					var ge = function (id) {
 						return document.getElementById (id);
 					};
+					var getScrollBarWidth = function () {
+						var outer = document.createElement ('div');
+						outer.style.visibility = 'hidden';
+						outer.style.width = '100px';
+						outer.style.msOverflowStyle = 'scrollbar';
+						document.body.appendChild (outer);
+						var widthNoScroll = outer.offsetWidth;
+						outer.style.overflow = 'scroll';
+						var inner = document.createElement ('div');
+						inner.style.width = '100%';
+						outer.appendChild (inner);
+						var widthWithScroll = inner.offsetWidth;
+						outer.parentNode.removeChild (outer);
+						return widthNoScroll - widthWithScroll;
+					};
 					__pragma__ ('<all>')
 						__all__.SUBMIT_URL = SUBMIT_URL;
 						__all__.__name__ = __name__;
 						__all__.ce = ce;
 						__all__.ge = ge;
+						__all__.getScrollBarWidth = getScrollBarWidth;
 						__all__.ws_scheme = ws_scheme;
 					__pragma__ ('</all>')
 				}
@@ -2697,8 +2719,67 @@ function app () {
 				__inited__: false,
 				__init__: function (__all__) {
 					var __name__ = 'widgets';
+					var e = __init__ (__world__.dom).e;
+					var Div = __init__ (__world__.dom).Div;
+					var getScrollBarWidth = __init__ (__world__.utils).getScrollBarWidth;
+					var SplitPane = __class__ ('SplitPane', [e], {
+						__module__: __name__,
+						get resize () {return __get__ (this, function (self, width, height) {
+							self.width = width;
+							self.height = height;
+							self.contentheight = max (self.height - self.controlheight, 200);
+							self.height = self.controlheight + self.contentheight;
+							self.container.w (self.width).h (self.height);
+							self.controlpanel.w (self.width).h (self.controlheight);
+							self.contentdiv.w (self.width).h (self.contentheight);
+							var sbw = getScrollBarWidth ();
+							self.contentinnerwidth = self.width - sbw;
+							self.contentinnerheight = self.contentheight - sbw;
+							self.contentdiv.x ().a (self.contentelement);
+							try {
+								self.contentelement.resize (self.contentinnerwidth, self.contentinnerheight);
+							}
+							catch (__except0__) {
+								// pass;
+							}
+						});},
+						get setcontentelement () {return __get__ (this, function (self, contentelement) {
+							self.contentelement = contentelement;
+							self.resize (self.width, self.height);
+						});},
+						get resizetowindow () {return __get__ (this, function (self) {
+							self.resize (window.innerWidth, window.innerHeight);
+						});},
+						get __init__ () {return __get__ (this, function (self, args) {
+							if (typeof args == 'undefined' || (args != null && args .hasOwnProperty ("__kwargtrans__"))) {;
+								var args = dict ({});
+							};
+							__super__ (SplitPane, '__init__') (self, 'div');
+							self.controlheight = args.py_get ('controlheight', 100);
+							self.container = Div (list (['splitpane', 'container']));
+							self.controlpanel = Div (list (['splitpane', 'controlpanel']));
+							self.contentdiv = Div (list (['splitpane', 'contentdiv']));
+							self.container.a (list ([self.controlpanel, self.contentdiv]));
+							self.contentelement = Div ();
+							self.resize (args.py_get ('width', 600), args.py_get ('height', 400));
+							self.fillwindow = args.py_get ('fillwindow', false);
+							if (self.fillwindow) {
+								window.addEventListener ('resize', self.resizetowindow);
+								self.resizetowindow ();
+							}
+							self.a (self.container);
+						});}
+					});
+					__pragma__ ('<use>' +
+						'dom' +
+						'utils' +
+					'</use>')
 					__pragma__ ('<all>')
+						__all__.Div = Div;
+						__all__.SplitPane = SplitPane;
 						__all__.__name__ = __name__;
+						__all__.e = e;
+						__all__.getScrollBarWidth = getScrollBarWidth;
 					__pragma__ ('</all>')
 				}
 			}
