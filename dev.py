@@ -21,14 +21,17 @@ for dir in CHECK_DIRS:
     dir_dicts[dir] = dir_listing_as_dict(dir)
 
 def check_dirs():
-    for dir in CHECK_DIRS:
+    anychanged = False
+    for dir in CHECK_DIRS:        
         dictionary = dir_listing_as_dict(dir)
         compareto = dir_dicts[dir]
         for name, item in dictionary.items():
             compareitem = compareto[name]
             if item["st_mtime"] > compareitem["st_mtime"]:
                 compareitem["st_mtime"] = item["st_mtime"]
-                browser.refresh()
+                anychanged = True
+    if anychanged:
+        browser.refresh()
 
 server = ProcessManager({
     "name": "flask server",
@@ -49,7 +52,7 @@ browser.set_window_position(browser_x, browser_y)
 browser.set_window_size(browser_w, browser_h)
 
 def watch_browser_thread_target(browser, browserconfig):
-    time.sleep(10)
+    time.sleep(15)
     browser.get('http://localhost:5000')
     while True:
         pos = browser.get_window_position()
