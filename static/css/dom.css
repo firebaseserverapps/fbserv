@@ -1,0 +1,14 @@
+.splitpane.container {
+    background-color: #eee;
+}
+
+.splitpane.controlpanel {
+    display: flex; justify-content: space-around; align-items: center;
+    background-color: #ddd;
+}
+
+.splitpane.contentdiv {
+    background-color: #dff;
+    overflow: scroll;
+}
+

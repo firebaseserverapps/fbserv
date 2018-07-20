@@ -38,14 +38,12 @@ class e:
         return self
 
     # append element
-    def a(self, e):
-        self.e.appendChild(e.e)
-        return self
-
-    # append list of elements
-    def aa(self, es):
-        for e in es:
-            self.a(e)
+    def a(self, element):
+        if Array.isArray(element):
+            for eitem in element:
+                self.e.appendChild(eitem.e)
+        else:
+            self.e.appendChild(element.e)
         return self
 
     # shorthand for setAttribute
@@ -152,18 +150,16 @@ class e:
 
     # add class
     def ac(self, klass):
-        self.e.classList.add(klass)
+        if Array.isArray(klass):
+            for classitem in klass:
+                self.e.classList.add(classitem)
+        else:
+            self.e.classList.add(klass)
         return self
 
     # add class conditional
     def acc(self, cond, klass):
         if cond:
-            self.e.classList.add(klass)
-        return self
-
-    # add classes
-    def aac(self, klasses):
-        for klass in klasses:
             self.e.classList.add(klass)
         return self
 
@@ -221,7 +217,7 @@ class e:
 class Div(e):
     def __init__(self, klass = None):
         super().__init__("div")
-        if klass:
+        if klass:            
             self.ac(klass)
 
 class Span(e):

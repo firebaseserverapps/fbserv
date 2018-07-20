@@ -1,7 +1,7 @@
 from utils import SUBMIT_URL
 from utils import ge
 import dom
-import widgets
+from widgets import SplitPane
 
 ######################################################
 # client
@@ -12,6 +12,11 @@ class Client:
 
     def build(self):
         self.root.innerHTML = ""        
+        self.mainelement = SplitPane({
+            "fillwindow": True
+        })
+        self.mainelement.setcontentelement(SplitPane())
+        self.root.appendChild(self.mainelement.e)
 
     def onconnect(self):
         self.sioreq({"kind": "connected"})
