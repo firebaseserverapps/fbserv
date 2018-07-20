@@ -32,6 +32,13 @@ class Client:
     def sendverificationcallback(self):
         firebase.auth().currentUser.sendEmailVerification().catch(lambda error: print(error))
 
+    def resetpasswordcallback(self):
+        email = self.emailinput.getText()
+        firebase.auth().sendPasswordResetEmail(email).then(
+            lambda: window.alert("Password reset email has been sent to {} !".format(email)),
+            lambda error: print(error)
+        )
+
     def buildsignupdiv(self):
         self.signupdiv = Div()
         self.emailinput = TextInput()
@@ -40,8 +47,9 @@ class Client:
         self.signoutbutton = Button("Sign out", self.signoutcallback)
         self.signupbutton = Button("Sign up", self.signupcallback)
         self.sendverificationbutton = Button("Send verification", self.sendverificationcallback)
+        self.resetpasswordbutton = Button("Reset password", self.resetpasswordcallback)
         self.userinfodiv = Div()
-        self.signupdiv.a([self.emailinput, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.userinfodiv])
+        self.signupdiv.a([self.emailinput, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.resetpasswordbutton, self.userinfodiv])
 
     def build(self):        
         self.root.innerHTML = ""        
