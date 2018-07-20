@@ -1,7 +1,7 @@
 from utils import SUBMIT_URL
 from utils import ge
-import dom
-from widgets import SplitPane
+from dom import Div
+from widgets import TabPane, Tab
 
 ######################################################
 # client
@@ -12,10 +12,15 @@ class Client:
 
     def build(self):
         self.root.innerHTML = ""        
-        self.mainelement = SplitPane({
-            "fillwindow": True
-        })
-        self.mainelement.setcontentelement(SplitPane())
+        self.mainelement = TabPane({
+            "id": "maintabpane",
+            "fillwindow": True,
+            "tabs": [
+                Tab("main", "Main", Div("contentplaceholder").html("Main.")),
+                Tab("log", "Log", Div("contentplaceholder").html("Log.")),
+                Tab("about", "About", Div("contentplaceholder").html("About."))
+            ]
+        })        
         self.root.appendChild(self.mainelement.e)
 
     def onconnect(self):

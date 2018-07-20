@@ -1,3 +1,17 @@
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+}
+
+.contentplaceholder {
+    padding: 20px;
+}
+
 .splitpane.container {
     background-color: #eee;
 }
@@ -12,3 +26,17 @@
     overflow: scroll;
 }
 
+.tab.container {
+    cursor: pointer;
+    background-color: #ccc;    
+    opacity: 0.6;
+}
+
+.tab.container.selected {
+    background-color: #fff;    
+    opacity: 0.8;
+}
+
+.tab.container:hover {
+    opacity: 1;
+}

@@ -128,6 +128,10 @@ class e:
         self.e.style.position = "relative"
         return self
 
+    def pad(self, pad):
+        self.e.style.padding = pad + "px"
+        return self
+
     # margin left
     def ml(self, ml):
         self.e.style.marginLeft = ml + "px"
@@ -146,6 +150,26 @@ class e:
     # margin bottom
     def mb(self, mb):
         self.e.style.marginBottom = mb + "px"
+        return self
+
+    # padding left
+    def pl(self, pl):
+        self.e.style.paddingLeft = pl + "px"
+        return self
+
+    # padding right
+    def par(self, pr):
+        self.e.style.paddingRight = pr + "px"
+        return self
+
+    # padding top
+    def pt(self, pt):
+        self.e.style.paddingTop = pt + "px"
+        return self
+
+    # padding bottom
+    def pb(self, pb):
+        self.e.style.paddingBottom = pb + "px"
         return self
 
     # add class
