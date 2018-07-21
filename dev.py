@@ -33,6 +33,16 @@ def check_dirs():
     if anychanged:
         browser.refresh()
 
+simple = ProcessManager({
+    "name": "simple server",
+    "command": "python",
+    "command_args": ["-u", "simple.py"],    
+    "verbose": True,
+    "color": "BRIGHTCYAN"
+})
+
+simple.start()
+
 server = ProcessManager({
     "name": "flask server",
     "command": "python",

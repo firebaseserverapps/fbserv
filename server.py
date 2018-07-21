@@ -1,5 +1,15 @@
+#########################################################
+# global imports
 import random
-from utils.misc import read_yaml_from_file
+import json
+import sys
+from traceback import print_exc
+#########################################################
+
+#########################################################
+# local imports
+from utils.misc import read_yaml_from_file, postjson
+#########################################################
 
 #########################################################
 # flask imports
@@ -52,16 +62,22 @@ def index():
 #########################################################
 # socketio event handlers
 @socketio.on('sioreq')
-def handle_sioreq(json):
+def handle_sioreq(obj):
     printreq(request)
-    if "kind" in json:
-        kind = json["kind"]
+    if "kind" in obj:
+        kind = obj["kind"]
         if kind == "connected":
             firebaseconfig = read_yaml_from_file("firebase/fbcreds.yml", {})
             socketio.emit("siores", {
                 "kind": "connectedack",
                 "firebaseconfig": firebaseconfig
             }, room = request.sid, namespace = "/")
+    try:
+        simpleresponsecontent = postjson("http://localhost:4000", obj)        
+        simpleresobj = json.loads(simpleresponsecontent)        
+        socketio.emit("siores", simpleresobj, room = request.sid, namespace = "/")
+    except:
+        print_exc(file = sys.stderr)
 #########################################################
 
 #########################################################

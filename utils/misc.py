@@ -1,6 +1,36 @@
 import os
 import yaml
+import json
 import stat
+import certifi
+import urllib3
+import sys
+from traceback import print_exc
+
+###################################################
+# post
+http = urllib3.PoolManager(
+    cert_reqs='CERT_REQUIRED',
+    ca_certs=certifi.where()
+)
+
+def geturl(url):
+    print("get url", url)
+    r = http.request("GET", url)
+    content = r.data.decode("utf-8")
+    return content
+
+def postjson(url, obj):
+    #print("post json", url, obj)
+    try:
+        r = http.request('POST', url, headers = {'Content-Type': 'application/json'}, body = json.dumps(obj))
+        content = r.data.decode("utf-8")
+        #print("response", content)
+        return content
+    except:
+        #print_exc(file = sys.stderr)
+        return None
+###################################################
 
 ###################################################
 # misc
