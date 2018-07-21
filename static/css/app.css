@@ -26,13 +26,29 @@
     display: flex; justify-content: space-around; align-items: center; flex-flow: column;
     margin: 5px;
     width: calc(100% - 10px);
-    height: 80px;
-    background-color: #ffe;
-    font-size: 14px;
+    height: 85px;
+    background-color: #ffe;    
     font-family: monospace;
 }
 
 .uiinfo {
     font-weight: bold;
     color: #070;
+    font-size: 14px;
+}
+
+.uiinfored {
+    font-weight: bold;
+    color: #f00;
+    font-size: 14px;
+}
+
+.profilelogged{
+    font-weight: bold;
+    color: #070;
+}
+
+.profiletextinput {
+    font-family: monospace;
+    padding: 3px;
 }

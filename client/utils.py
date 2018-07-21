@@ -7,6 +7,16 @@ else:
 
 SUBMIT_URL = ws_scheme + window.location.host
 
+def cpick(cond, valuetrue, valuefalse):
+    if cond:
+        return valuetrue
+    return valuefalse
+
+def getelse(value, elsevalue):
+    if value:
+        return value
+    return elsevalue
+
 def ce(tag):
     return document.createElement(tag)
 

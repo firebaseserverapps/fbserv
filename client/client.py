@@ -1,5 +1,5 @@
 from utils import SUBMIT_URL
-from utils import ge
+from utils import ge, cpick, getelse
 from dom import Div, Span, TextInput, PasswordInput, Button
 from widgets import TabPane, Tab
 
@@ -53,9 +53,9 @@ class Client:
         self.signupdiv = Div()
         self.signupmaildiv = Div("signupmaildiv")
         self.emaillabel = Span().html("Email:")
-        self.emailinput = TextInput().w(250)
+        self.emailinput = TextInput().ac("profiletextinput").w(250)
         self.passwordlabel = Span().html("Password:")
-        self.passwordinput = PasswordInput().w(100)
+        self.passwordinput = PasswordInput().ac("profiletextinput").w(100)
         self.signinbutton = Button("Sign in", self.signincallback)
         self.signoutbutton = Button("Sign out", self.signoutcallback)
         self.signupbutton = Button("Sign up", self.signupcallback)
@@ -102,8 +102,10 @@ class Client:
         dn = self.getuserdisplayname()
         if dn:
             self.profiletab.container.html(dn)
+            self.profiletab.ac("profilelogged")
         else:
             self.profiletab.container.html("Profile")
+            self.profiletab.rc("profilelogged")
 
     def authstatechanged(self, user):        
         self.user = user
@@ -117,12 +119,17 @@ class Client:
             self.providerData = user.providerData        
             print("user", self.displayName, self.email)
             print(self.providerData)
-            self.userinfodiv.html("<div>name: <span class='uiinfo'>{}</span></div><div>email: <span class='uiinfo'>{}</span></div><div>verified: <span class='uiinfo'>{}</span></div><div>uid: <span class='uiinfo'>{}</span></div>".format(self.displayName, self.email, self.emailVerified, self.uid))
+            self.nameinfodiv = Div().html("name : <span class='{}'>{}</span>".format(cpick(self.displayName, "uiinfo", "uiinfored"), getelse(self.displayName,"&lt;NA&gt;"))).pt(5)
+            self.emailinfodiv = Div().html("email : <span class='{}'>{}</span>".format(cpick(self.email, "uiinfo", "uiinfored"), getelse(self.email, "&lt;NA&gt;")))
+            self.verifiedinfodiv = Div().html("status : <span class='{}'>{}</span>".format(cpick(self.emailVerified, "uiinfo", "uiinfored"), cpick(self.emailVerified, "verified", "not verified")))            
+            self.uidinfodiv = Div().html("uid : <span class='uiinfo'>{}</span>".format(self.uid)).pb(5)
+            self.userinfodiv.x().a([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.uidinfodiv])
             self.emailinput.setText(self.email)            
         else:
             print("no user")
             self.userinfodiv.html("Please sign up or sign in !")
         self.setprofiletab()
+        self.userinfodiv.fs(cpick(self.user, 10, 14))
 
     def initializefirebaseui(self):
         self.uiConfig = {
