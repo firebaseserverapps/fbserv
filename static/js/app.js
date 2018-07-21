@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-21 13:26:48
+// Transcrypt'ed from Python, 2018-07-21 15:21:59
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2209,6 +2209,8 @@ function app () {
 					var __name__ = 'client';
 					var SUBMIT_URL = __init__ (__world__.utils).SUBMIT_URL;
 					var ge = __init__ (__world__.utils).ge;
+					var cpick = __init__ (__world__.utils).cpick;
+					var getelse = __init__ (__world__.utils).getelse;
 					var Div = __init__ (__world__.dom).Div;
 					var Span = __init__ (__world__.dom).Span;
 					var TextInput = __init__ (__world__.dom).TextInput;
@@ -2271,9 +2273,9 @@ function app () {
 							self.signupdiv = Div ();
 							self.signupmaildiv = Div ('signupmaildiv');
 							self.emaillabel = Span ().html ('Email:');
-							self.emailinput = TextInput ().w (250);
+							self.emailinput = TextInput ().ac ('profiletextinput').w (250);
 							self.passwordlabel = Span ().html ('Password:');
-							self.passwordinput = PasswordInput ().w (100);
+							self.passwordinput = PasswordInput ().ac ('profiletextinput').w (100);
 							self.signinbutton = Button ('Sign in', self.signincallback);
 							self.signoutbutton = Button ('Sign out', self.signoutcallback);
 							self.signupbutton = Button ('Sign up', self.signupcallback);
@@ -2312,9 +2314,11 @@ function app () {
 							var dn = self.getuserdisplayname ();
 							if (dn) {
 								self.profiletab.container.html (dn);
+								self.profiletab.ac ('profilelogged');
 							}
 							else {
 								self.profiletab.container.html ('Profile');
+								self.profiletab.rc ('profilelogged');
 							}
 						});},
 						get authstatechanged () {return __get__ (this, function (self, user) {
@@ -2329,7 +2333,11 @@ function app () {
 								self.providerData = user.providerData;
 								print ('user', self.displayName, self.email);
 								print (self.providerData);
-								self.userinfodiv.html ("<div>name: <span class='uiinfo'>{}</span></div><div>email: <span class='uiinfo'>{}</span></div><div>verified: <span class='uiinfo'>{}</span></div><div>uid: <span class='uiinfo'>{}</span></div>".format (self.displayName, self.email, self.emailVerified, self.uid));
+								self.nameinfodiv = Div ().html ("name : <span class='{}'>{}</span>".format (cpick (self.displayName, 'uiinfo', 'uiinfored'), getelse (self.displayName, '&lt;NA&gt;'))).pt (5);
+								self.emailinfodiv = Div ().html ("email : <span class='{}'>{}</span>".format (cpick (self.email, 'uiinfo', 'uiinfored'), getelse (self.email, '&lt;NA&gt;')));
+								self.verifiedinfodiv = Div ().html ("status : <span class='{}'>{}</span>".format (cpick (self.emailVerified, 'uiinfo', 'uiinfored'), cpick (self.emailVerified, 'verified', 'not verified')));
+								self.uidinfodiv = Div ().html ("uid : <span class='uiinfo'>{}</span>".format (self.uid)).pb (5);
+								self.userinfodiv.x ().a (list ([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.uidinfodiv]));
 								self.emailinput.setText (self.email);
 							}
 							else {
@@ -2337,6 +2345,7 @@ function app () {
 								self.userinfodiv.html ('Please sign up or sign in !');
 							}
 							self.setprofiletab ();
+							self.userinfodiv.fs (cpick (self.user, 10, 14));
 						});},
 						get initializefirebaseui () {return __get__ (this, function (self) {
 							self.uiConfig = dict ({'signInSuccessUrl': '/', 'signInOptions': list ([firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.PROVIDER_ID]), 'tosUrl': '/tos'});
@@ -2381,7 +2390,9 @@ function app () {
 						__all__.TabPane = TabPane;
 						__all__.TextInput = TextInput;
 						__all__.__name__ = __name__;
+						__all__.cpick = cpick;
 						__all__.ge = ge;
+						__all__.getelse = getelse;
 					__pragma__ ('</all>')
 				}
 			}
@@ -2857,6 +2868,18 @@ function app () {
 						var ws_scheme = 'ws://';
 					}
 					var SUBMIT_URL = ws_scheme + window.location.host;
+					var cpick = function (cond, valuetrue, valuefalse) {
+						if (cond) {
+							return valuetrue;
+						}
+						return valuefalse;
+					};
+					var getelse = function (value, elsevalue) {
+						if (value) {
+							return value;
+						}
+						return elsevalue;
+					};
 					var ce = function (tag) {
 						return document.createElement (tag);
 					};
@@ -2882,8 +2905,10 @@ function app () {
 						__all__.SUBMIT_URL = SUBMIT_URL;
 						__all__.__name__ = __name__;
 						__all__.ce = ce;
+						__all__.cpick = cpick;
 						__all__.ge = ge;
 						__all__.getScrollBarWidth = getScrollBarWidth;
+						__all__.getelse = getelse;
 						__all__.ws_scheme = ws_scheme;
 					__pragma__ ('</all>')
 				}
