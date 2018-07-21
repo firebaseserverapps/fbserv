@@ -70,13 +70,14 @@ class Client:
     def build(self):        
         self.root.innerHTML = ""        
         self.buildsignupdiv()
+        self.profiletab = Tab("profile", "Profile", self.signupdiv)
         self.mainelement = TabPane({
             "id": "maintabpane",
             "fillwindow": True,
             "tabs": [
                 Tab("main", "Main", Div("contentplaceholder").html("Main.")),
                 Tab("log", "Log", Div("contentplaceholder").html("Log.")),
-                Tab("profile", "Profile", self.signupdiv),
+                self.profiletab,
                 Tab("about", "About", Div("contentplaceholder").html("About."))
             ],
             "selected": "profile"
@@ -90,6 +91,20 @@ class Client:
         print("->", obj)
         self.socket.emit("sioreq", obj)    
 
+    def getuserdisplayname(self):
+        if self.user:
+            if self.displayName:
+                return self.displayName
+            return self.email
+        return None
+
+    def setprofiletab(self):
+        dn = self.getuserdisplayname()
+        if dn:
+            self.profiletab.container.html(dn)
+        else:
+            self.profiletab.container.html("Profile")
+
     def authstatechanged(self, user):        
         self.user = user
         if user:        
@@ -102,11 +117,12 @@ class Client:
             self.providerData = user.providerData        
             print("user", self.displayName, self.email)
             print(self.providerData)
-            self.userinfodiv.html("name: {}<br>email: {}<br>verified: {}<br>uid: {}<br>".format(self.displayName, self.email, self.emailVerified, self.uid))
+            self.userinfodiv.html("<div>name: <span class='uiinfo'>{}</span></div><div>email: <span class='uiinfo'>{}</span></div><div>verified: <span class='uiinfo'>{}</span></div><div>uid: <span class='uiinfo'>{}</span></div>".format(self.displayName, self.email, self.emailVerified, self.uid))
             self.emailinput.setText(self.email)            
         else:
             print("no user")
             self.userinfodiv.html("Please sign up or sign in !")
+        self.setprofiletab()
 
     def initializefirebaseui(self):
         self.uiConfig = {

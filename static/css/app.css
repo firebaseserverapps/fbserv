@@ -23,11 +23,16 @@
 }
 
 .userinfodiv {
-    display: flex; justify-content: space-around; align-items: center;
+    display: flex; justify-content: space-around; align-items: center; flex-flow: column;
     margin: 5px;
     width: calc(100% - 10px);
-    height: 90px;
+    height: 80px;
     background-color: #ffe;
     font-size: 14px;
     font-family: monospace;
+}
+
+.uiinfo {
+    font-weight: bold;
+    color: #070;
 }
