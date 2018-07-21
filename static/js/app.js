@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-21 01:44:21
+// Transcrypt'ed from Python, 2018-07-21 11:50:41
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2210,6 +2210,7 @@ function app () {
 					var SUBMIT_URL = __init__ (__world__.utils).SUBMIT_URL;
 					var ge = __init__ (__world__.utils).ge;
 					var Div = __init__ (__world__.dom).Div;
+					var Span = __init__ (__world__.dom).Span;
 					var TextInput = __init__ (__world__.dom).TextInput;
 					var PasswordInput = __init__ (__world__.dom).PasswordInput;
 					var Button = __init__ (__world__.dom).Button;
@@ -2225,8 +2226,10 @@ function app () {
 							var email = self.emailinput.getText ();
 							var password = self.passwordinput.getText ();
 							print ('signing in user with', email, password);
-							firebase.auth ().signInWithEmailAndPassword (email, password).catch ((function __lambda__ (error) {
-								return print (error);
+							firebase.auth ().signInWithEmailAndPassword (email, password).then ((function __lambda__ () {
+								return print ('ok');
+							}), (function __lambda__ (error) {
+								return window.alert ('{}'.format (error));
 							}));
 						});},
 						get signoutcallback () {return __get__ (this, function (self) {
@@ -2235,20 +2238,25 @@ function app () {
 								firebase.auth ().signOut ();
 							}
 							else {
-								print ('already signed out');
+								window.alert ('Already signed out.');
 							}
 						});},
 						get signupcallback () {return __get__ (this, function (self) {
 							var email = self.emailinput.getText ();
 							var password = self.passwordinput.getText ();
 							print ('signing up user with', email, password);
-							firebase.auth ().createUserWithEmailAndPassword (email, password).catch ((function __lambda__ (error) {
-								return print (error);
+							firebase.auth ().createUserWithEmailAndPassword (email, password).then ((function __lambda__ () {
+								return print ('ok');
+							}), (function __lambda__ (error) {
+								return window.alert ('{}'.format (error));
 							}));
 						});},
 						get sendverificationcallback () {return __get__ (this, function (self) {
-							firebase.auth ().currentUser.sendEmailVerification ().catch ((function __lambda__ (error) {
-								return print (error);
+							var email = self.emailinput.getText ();
+							firebase.auth ().currentUser.sendEmailVerification ().then ((function __lambda__ () {
+								return window.alert ('Verification email has been sent to {} !'.format (email));
+							}), (function __lambda__ (error) {
+								return window.alert ('{}'.format (error));
 							}));
 						});},
 						get resetpasswordcallback () {return __get__ (this, function (self) {
@@ -2256,20 +2264,26 @@ function app () {
 							firebase.auth ().sendPasswordResetEmail (email).then ((function __lambda__ () {
 								return window.alert ('Password reset email has been sent to {} !'.format (email));
 							}), (function __lambda__ (error) {
-								return print (error);
+								return window.alert ('{}'.format (error));
 							}));
 						});},
 						get buildsignupdiv () {return __get__ (this, function (self) {
 							self.signupdiv = Div ();
-							self.emailinput = TextInput ();
-							self.passwordinput = PasswordInput ();
+							self.signupmaildiv = Div ('signupmaildiv');
+							self.emaillabel = Span ().html ('Email:');
+							self.emailinput = TextInput ().w (250);
+							self.passwordlabel = Span ().html ('Password:');
+							self.passwordinput = PasswordInput ().w (100);
 							self.signinbutton = Button ('Sign in', self.signincallback);
 							self.signoutbutton = Button ('Sign out', self.signoutcallback);
 							self.signupbutton = Button ('Sign up', self.signupcallback);
 							self.sendverificationbutton = Button ('Send verification', self.sendverificationcallback);
 							self.resetpasswordbutton = Button ('Reset password', self.resetpasswordcallback);
-							self.userinfodiv = Div ();
-							self.signupdiv.a (list ([self.emailinput, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.resetpasswordbutton, self.userinfodiv]));
+							self.userinfodiv = Div ('userinfodiv');
+							self.signupmaildiv.a (list ([self.emaillabel, self.emailinput, self.passwordlabel, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.resetpasswordbutton]));
+							self.signupdiv.a (list ([self.signupmaildiv, self.userinfodiv]));
+							self.firebaseuidiv = Div ().sa ('id', 'firebaseuidiv');
+							self.signupdiv.a (self.firebaseuidiv);
 						});},
 						get build () {return __get__ (this, function (self) {
 							self.root.innerHTML = '';
@@ -2294,14 +2308,19 @@ function app () {
 								self.isAnonymous = user.isAnonymous;
 								self.uid = user.uid;
 								self.providerData = user.providerData;
-								print ('user', self.email);
-								self.userinfodiv.ms ().html ('email: {}<br>verified: {}<br>uid: {}<br>'.format (self.email, self.emailVerified, self.uid));
+								print ('user', self.displayName, self.email);
+								print (self.providerData);
+								self.userinfodiv.html ('name: {}<br>email: {}<br>verified: {}<br>uid: {}<br>'.format (self.displayName, self.email, self.emailVerified, self.uid));
 								self.emailinput.setText (self.email);
 							}
 							else {
 								print ('no user');
-								self.userinfodiv.x ();
+								self.userinfodiv.html ('Please sign up or sign in !');
 							}
+						});},
+						get initializefirebaseui () {return __get__ (this, function (self) {
+							self.uiConfig = dict ({'signInSuccessUrl': '/', 'signInOptions': list ([firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.PROVIDER_ID]), 'tosUrl': '/tos'});
+							self.ui = new firebaseui.auth.AuthUI (firebase.auth ());
 						});},
 						get siores () {return __get__ (this, function (self, obj) {
 							print ('<-', obj);
@@ -2313,6 +2332,8 @@ function app () {
 									print ('initializing firebase from', self.firebaseconfig);
 									firebase.initializeApp (self.firebaseconfig);
 									firebase.auth ().onAuthStateChanged (self.authstatechanged);
+									self.initializefirebaseui ();
+									self.ui.start ('#firebaseuidiv', self.uiConfig);
 								}
 							}
 						});},
@@ -2335,6 +2356,7 @@ function app () {
 						__all__.Div = Div;
 						__all__.PasswordInput = PasswordInput;
 						__all__.SUBMIT_URL = SUBMIT_URL;
+						__all__.Span = Span;
 						__all__.Tab = Tab;
 						__all__.TabPane = TabPane;
 						__all__.TextInput = TextInput;
@@ -2345,6 +2367,7 @@ function app () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'dom', {
@@ -2848,7 +2871,6 @@ function app () {
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'widgets', {
