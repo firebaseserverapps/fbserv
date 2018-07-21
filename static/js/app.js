@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-21 16:14:22
+// Transcrypt'ed from Python, 2018-07-21 17:56:10
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2311,15 +2311,44 @@ function app () {
 							return null;
 						});},
 						get setprofiletab () {return __get__ (this, function (self) {
+							self.profiletab.rc (list (['profilelogged', 'profileanon']));
 							var dn = self.getuserdisplayname ();
 							if (dn) {
 								self.profiletab.container.html (dn);
 								self.profiletab.ac ('profilelogged');
 							}
+							else if (self.user) {
+								self.profiletab.container.html ('Anonymous');
+								self.profiletab.ac ('profileanon');
+							}
 							else {
 								self.profiletab.container.html ('Profile');
-								self.profiletab.rc ('profilelogged');
 							}
+						});},
+						get signinanonymously () {return __get__ (this, function (self) {
+							firebase.auth ().signInAnonymously ().then ((function __lambda__ () {
+								return print ('ok');
+							}), (function __lambda__ (error) {
+								return print (error);
+							}));
+						});},
+						get userstatusverbal () {return __get__ (this, function (self) {
+							if (!(self.user)) {
+								return '[logged out]';
+							}
+							if (self.user.isAnonymous) {
+								return 'anonymous';
+							}
+							return cpick (self.emailVerified, 'verified', 'not verified');
+						});},
+						get userverified () {return __get__ (this, function (self) {
+							if (!(self.user)) {
+								return false;
+							}
+							if (self.user.isAnonymous) {
+								return false;
+							}
+							return self.user.emailVerified;
 						});},
 						get authstatechanged () {return __get__ (this, function (self, user) {
 							self.user = user;
@@ -2335,7 +2364,7 @@ function app () {
 								print (self.providerData);
 								self.nameinfodiv = Div ().html ("name : <span class='{}'>{}</span>".format (cpick (self.displayName, 'uiinfo', 'uiinfored'), getelse (self.displayName, '&lt;NA&gt;'))).pt (5);
 								self.emailinfodiv = Div ().html ("email : <span class='{}'>{}</span>".format (cpick (self.email, 'uiinfo', 'uiinfored'), getelse (self.email, '&lt;NA&gt;')));
-								self.verifiedinfodiv = Div ().html ("status : <span class='{}'>{}</span>".format (cpick (self.emailVerified, 'uiinfo', 'uiinfored'), cpick (self.emailVerified, 'verified', 'not verified')));
+								self.verifiedinfodiv = Div ().html ("status : <span class='{}'>{}</span>".format (cpick (self.userverified (), 'uiinfo', 'uiinfored'), self.userstatusverbal ()));
 								self.uidinfodiv = Div ().html ("uid : <span class='uiinfo'>{}</span>".format (self.uid)).pb (5);
 								self.userinfodiv.x ().a (list ([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.uidinfodiv]));
 								self.emailinput.setText (self.email);
@@ -2343,7 +2372,7 @@ function app () {
 							}
 							else {
 								print ('no user');
-								self.userinfodiv.html ('Please sign up or sign in !');
+								self.userinfodiv.x ().a (list ([Div ().html ('Please sign up or sign in !'), Button ('Sign in anonymously', self.signinanonymously ())]));
 							}
 							self.setprofiletab ();
 							self.userinfodiv.fs (cpick (self.user, 10, 14));
@@ -2574,7 +2603,16 @@ function app () {
 							return self;
 						});},
 						get rc () {return __get__ (this, function (self, klass) {
-							self.e.classList.remove (klass);
+							if (Array.isArray (klass)) {
+								var __iterable0__ = klass;
+								for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+									var classitem = __iterable0__ [__index0__];
+									self.e.classList.remove (classitem);
+								}
+							}
+							else {
+								self.e.classList.remove (klass);
+							}
 							return self;
 						});},
 						get arc () {return __get__ (this, function (self, cond, klass) {
@@ -2855,7 +2893,6 @@ function app () {
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'utils', {
