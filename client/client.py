@@ -99,13 +99,37 @@ class Client:
         return None
 
     def setprofiletab(self):
+        self.profiletab.rc(["profilelogged", "profileanon"])
         dn = self.getuserdisplayname()
         if dn:
             self.profiletab.container.html(dn)
             self.profiletab.ac("profilelogged")
         else:
-            self.profiletab.container.html("Profile")
-            self.profiletab.rc("profilelogged")
+            if self.user:
+                self.profiletab.container.html("Anonymous")
+                self.profiletab.ac("profileanon")
+            else:
+                self.profiletab.container.html("Profile")
+
+    def signinanonymously(self):
+        firebase.auth().signInAnonymously().then(
+            lambda: print("ok"),
+            lambda error: print(error)
+        )
+
+    def userstatusverbal(self):
+        if not self.user:
+            return "[logged out]"
+        if self.user.isAnonymous:
+            return "anonymous"
+        return cpick(self.emailVerified, "verified", "not verified")
+
+    def userverified(self):
+        if not self.user:
+            return False
+        if self.user.isAnonymous:
+            return False
+        return self.user.emailVerified
 
     def authstatechanged(self, user):        
         self.user = user
@@ -121,7 +145,7 @@ class Client:
             print(self.providerData)
             self.nameinfodiv = Div().html("name : <span class='{}'>{}</span>".format(cpick(self.displayName, "uiinfo", "uiinfored"), getelse(self.displayName,"&lt;NA&gt;"))).pt(5)
             self.emailinfodiv = Div().html("email : <span class='{}'>{}</span>".format(cpick(self.email, "uiinfo", "uiinfored"), getelse(self.email, "&lt;NA&gt;")))
-            self.verifiedinfodiv = Div().html("status : <span class='{}'>{}</span>".format(cpick(self.emailVerified, "uiinfo", "uiinfored"), cpick(self.emailVerified, "verified", "not verified")))            
+            self.verifiedinfodiv = Div().html("status : <span class='{}'>{}</span>".format(cpick(self.userverified(), "uiinfo", "uiinfored"), self.userstatusverbal()))            
             self.uidinfodiv = Div().html("uid : <span class='uiinfo'>{}</span>".format(self.uid)).pb(5)
             self.userinfodiv.x().a([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.uidinfodiv])
             self.emailinput.setText(self.email)            
@@ -130,7 +154,10 @@ class Client:
             })
         else:
             print("no user")
-            self.userinfodiv.html("Please sign up or sign in !")
+            self.userinfodiv.x().a([
+                Div().html("Please sign up or sign in !"),
+                Button("Sign in anonymously", self.signinanonymously())
+            ])
         self.setprofiletab()
         self.userinfodiv.fs(cpick(self.user, 10, 14))
 

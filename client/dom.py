@@ -189,7 +189,11 @@ class e:
 
     # remove class
     def rc(self, klass):
-        self.e.classList.remove(klass)
+        if Array.isArray(klass):
+            for classitem in klass:
+                self.e.classList.remove(classitem)
+        else:
+            self.e.classList.remove(klass)
         return self
 
     # add or remove class based on condition
