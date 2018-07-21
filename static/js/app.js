@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-21 11:50:41
+// Transcrypt'ed from Python, 2018-07-21 13:26:48
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2288,7 +2288,8 @@ function app () {
 						get build () {return __get__ (this, function (self) {
 							self.root.innerHTML = '';
 							self.buildsignupdiv ();
-							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), Tab ('profile', 'Profile', self.signupdiv), Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'profile'}));
+							self.profiletab = Tab ('profile', 'Profile', self.signupdiv);
+							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'profile'}));
 							self.root.appendChild (self.mainelement.e);
 						});},
 						get onconnect () {return __get__ (this, function (self) {
@@ -2297,6 +2298,24 @@ function app () {
 						get sioreq () {return __get__ (this, function (self, obj) {
 							print ('->', obj);
 							self.socket.emit ('sioreq', obj);
+						});},
+						get getuserdisplayname () {return __get__ (this, function (self) {
+							if (self.user) {
+								if (self.displayName) {
+									return self.displayName;
+								}
+								return self.email;
+							}
+							return null;
+						});},
+						get setprofiletab () {return __get__ (this, function (self) {
+							var dn = self.getuserdisplayname ();
+							if (dn) {
+								self.profiletab.container.html (dn);
+							}
+							else {
+								self.profiletab.container.html ('Profile');
+							}
 						});},
 						get authstatechanged () {return __get__ (this, function (self, user) {
 							self.user = user;
@@ -2310,13 +2329,14 @@ function app () {
 								self.providerData = user.providerData;
 								print ('user', self.displayName, self.email);
 								print (self.providerData);
-								self.userinfodiv.html ('name: {}<br>email: {}<br>verified: {}<br>uid: {}<br>'.format (self.displayName, self.email, self.emailVerified, self.uid));
+								self.userinfodiv.html ("<div>name: <span class='uiinfo'>{}</span></div><div>email: <span class='uiinfo'>{}</span></div><div>verified: <span class='uiinfo'>{}</span></div><div>uid: <span class='uiinfo'>{}</span></div>".format (self.displayName, self.email, self.emailVerified, self.uid));
 								self.emailinput.setText (self.email);
 							}
 							else {
 								print ('no user');
 								self.userinfodiv.html ('Please sign up or sign in !');
 							}
+							self.setprofiletab ();
 						});},
 						get initializefirebaseui () {return __get__ (this, function (self) {
 							self.uiConfig = dict ({'signInSuccessUrl': '/', 'signInOptions': list ([firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.PROVIDER_ID]), 'tosUrl': '/tos'});
@@ -2367,7 +2387,6 @@ function app () {
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'dom', {
@@ -2871,6 +2890,7 @@ function app () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'widgets', {
