@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-21 15:21:59
+// Transcrypt'ed from Python, 2018-07-21 16:14:22
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2339,6 +2339,7 @@ function app () {
 								self.uidinfodiv = Div ().html ("uid : <span class='uiinfo'>{}</span>".format (self.uid)).pb (5);
 								self.userinfodiv.x ().a (list ([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.uidinfodiv]));
 								self.emailinput.setText (self.email);
+								self.database.ref (('users/' + self.uid) + '/lastseen').set (dict ({'timems': new Date ().getTime ()}));
 							}
 							else {
 								print ('no user');
@@ -2360,6 +2361,7 @@ function app () {
 									self.firebaseconfig = obj ['firebaseconfig'];
 									print ('initializing firebase from', self.firebaseconfig);
 									firebase.initializeApp (self.firebaseconfig);
+									self.database = firebase.database ();
 									firebase.auth ().onAuthStateChanged (self.authstatechanged);
 									self.initializefirebaseui ();
 									self.ui.start ('#firebaseuidiv', self.uiConfig);
