@@ -38,6 +38,11 @@ def randurl():
 
 #########################################################
 # app routes
+@app.route("/tos")
+def tos():
+    printreq(request)
+    return render_template("tos.html")
+
 @app.route("/")
 def index():
     printreq(request)

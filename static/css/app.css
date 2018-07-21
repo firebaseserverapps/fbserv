@@ -12,3 +12,22 @@
     font-size: 25px;
     background-color: #eee;
 }
+
+.signupmaildiv {
+    display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;
+    margin: 5px;
+    width: calc(100% - 10px);
+    height: 60px;
+    background-color: #eee;
+    font-size: 10px;
+}
+
+.userinfodiv {
+    display: flex; justify-content: space-around; align-items: center;
+    margin: 5px;
+    width: calc(100% - 10px);
+    height: 90px;
+    background-color: #ffe;
+    font-size: 14px;
+    font-family: monospace;
+}
