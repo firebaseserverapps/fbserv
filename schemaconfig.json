@@ -9,8 +9,8 @@
       "kind": "scalar",
       "disposition": "string",
       "constraint": null,
-      "key": null,
-      "value": "",
+      "key": "key",
+      "value": "bar",
       "childsarg": [],
       "childsopened": false
     },
@@ -18,7 +18,7 @@
       "kind": "collection",
       "disposition": "dict",
       "constraint": null,
-      "key": null,
+      "key": "",
       "value": "",
       "childsarg": [],
       "childsopened": false
@@ -35,7 +35,7 @@
           "disposition": "string",
           "constraint": null,
           "key": null,
-          "value": "",
+          "value": "scalar",
           "childsarg": [],
           "childsopened": false
         },
@@ -44,11 +44,20 @@
           "disposition": "string",
           "constraint": null,
           "key": null,
-          "value": "",
+          "value": "value",
           "childsarg": [],
           "childsopened": false
         }
       ],
+      "childsopened": true
+    },
+    {
+      "kind": "scalar",
+      "disposition": "string",
+      "constraint": null,
+      "key": "key",
+      "value": "foo",
+      "childsarg": [],
       "childsopened": false
     }
   ],

@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-24 19:16:18
+// Transcrypt'ed from Python, 2018-07-24 23:23:13
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2797,6 +2797,7 @@ function app () {
 						__module__: __name__,
 						get __init__ () {return __get__ (this, function (self) {
 							__super__ (TextInput, '__init__') (self, 'text');
+							self.ac ('textinput');
 						});},
 						get setText () {return __get__ (this, function (self, content) {
 							self.sv (content);
@@ -2944,6 +2945,7 @@ function app () {
 					var e = __init__ (__world__.dom).e;
 					var Div = __init__ (__world__.dom).Div;
 					var ComboBox = __init__ (__world__.dom).ComboBox;
+					var TextInput = __init__ (__world__.dom).TextInput;
 					var getitem = __init__ (__world__.utils).getitem;
 					var SCHEMA_DEFAULT_ARGS = list ([list (['kind', 'scalar']), list (['disposition', 'string']), list (['constraint', null]), list (['key', null]), list (['value', '']), list (['childsarg', list ([])]), list (['childsopened', false])]);
 					var iscollection = function (schema) {
@@ -2986,15 +2988,31 @@ function app () {
 							self.childs.append (sch);
 							self.build ();
 						});},
+						get stringvalueinputchanged () {return __get__ (this, function (self) {
+							self.value = self.stringvalueinput.getText ();
+						});},
+						get keyinputchanged () {return __get__ (this, function (self) {
+							self.key = self.keyinput.getText ();
+						});},
 						get build () {return __get__ (this, function (self) {
 							self.x ().ac ('schema');
 							self.itemdiv = Div (list (['item', self.disposition]));
-							self.keydiv = Div ('key');
 							self.valuediv = Div (list (['value', self.disposition]));
+							if (self.kind == 'scalar') {
+								if (self.disposition == 'string') {
+									self.stringvalueinput = TextInput ().ac ('string').setText (self.value);
+									self.stringvalueinput.ae ('keyup', self.stringvalueinputchanged);
+									self.valuediv.a (self.stringvalueinput);
+								}
+							}
 							self.helpdiv = Div (list (['box', 'help'])).html ('?');
 							self.copydiv = Div (list (['box', 'copy'])).html ('C').ae ('mousedown', self.copydivclicked);
 							self.deletediv = Div (list (['box', 'delete'])).html ('X');
 							if (isdict (self.parent)) {
+								self.keydiv = Div ('key');
+								self.keyinput = TextInput ().ac ('key').setText (self.key);
+								self.keyinput.ae ('keyup', self.keyinputchanged);
+								self.keydiv.a (self.keyinput);
 								self.itemdiv.a (self.keydiv);
 							}
 							self.itemdiv.a (list ([self.valuediv, self.helpdiv, self.copydiv, self.deletediv]));
@@ -3069,6 +3087,7 @@ function app () {
 						__all__.Div = Div;
 						__all__.SCHEMA_DEFAULT_ARGS = SCHEMA_DEFAULT_ARGS;
 						__all__.Schema = Schema;
+						__all__.TextInput = TextInput;
 						__all__.__name__ = __name__;
 						__all__.e = e;
 						__all__.getitem = getitem;
