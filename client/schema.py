@@ -1,4 +1,4 @@
-from dom import e, Div, ComboBox
+from dom import e, Div, ComboBox, TextInput
 from utils import getitem
 
 SCHEMA_DEFAULT_ARGS = [
@@ -55,15 +55,29 @@ class Schema(e):
         self.childs.append(sch)
         self.build()
 
+    def stringvalueinputchanged(self):
+        self.value = self.stringvalueinput.getText()
+
+    def keyinputchanged(self):
+        self.key = self.keyinput.getText()
+
     def build(self):
         self.x().ac("schema")
-        self.itemdiv = Div(["item", self.disposition])
-        self.keydiv = Div("key")
+        self.itemdiv = Div(["item", self.disposition])        
         self.valuediv = Div(["value", self.disposition])
+        if self.kind == "scalar":
+            if self.disposition == "string":
+                self.stringvalueinput = TextInput().ac("string").setText(self.value)
+                self.stringvalueinput.ae("keyup", self.stringvalueinputchanged)
+                self.valuediv.a(self.stringvalueinput)
         self.helpdiv = Div(["box","help"]).html("?")
         self.copydiv = Div(["box","copy"]).html("C").ae("mousedown", self.copydivclicked)
         self.deletediv = Div(["box","delete"]).html("X")
         if isdict(self.parent):
+            self.keydiv = Div("key")
+            self.keyinput = TextInput().ac("key").setText(self.key)
+            self.keyinput.ae("keyup", self.keyinputchanged)
+            self.keydiv.a(self.keyinput)
             self.itemdiv.a(self.keydiv)
         self.itemdiv.a([self.valuediv, self.helpdiv, self.copydiv, self.deletediv])
         if iscollection(self):

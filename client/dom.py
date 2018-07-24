@@ -322,6 +322,7 @@ class CheckBox(Input):
 class TextInput(Input):
     def __init__(self):
         super().__init__("text")
+        self.ac("textinput")
 
     def setText(self, content):
         self.sv(content)

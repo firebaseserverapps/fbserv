@@ -1,6 +1,7 @@
 :root {
     --schema-box-size: 36px;
-    --schema-font-size: calc(var(--schema-box-size) * 0.6);
+    --schema-font-size: calc(var(--schema-box-size) * 0.7);
+    --schema-textinput-height: calc(var(--schema-box-size) * 0.8);
     --schema-key-width: 150px;
     --schema-value-width: 400px;
     --schema-margin: 2px;    
@@ -16,14 +17,17 @@
     margin: var(--schema-margin);
     background-color: #ddd;    
     width: fit-content;
+    padding: 2px;    
 }
 
 .schema .item.list {
-    border: 1px dashed #aaa;
+    border: 2px dotted #9aa;
+    padding: 0px;
 }
 
 .schema .item.dict {
-    border: 1px dashed #aaa;
+    border: 2px dotted #99a;
+    padding: 0px;
 }
 
 .schema .value.list {
@@ -32,6 +36,18 @@
 
 .schema .value.dict {
     background-color: #cce;    
+}
+
+.schema .value .textinput.string {
+    width: calc(var(--schema-value-width) - 10px);
+    height: var(--schema-textinput-height);
+    font-size: var(--schema-font-size);
+}
+
+.schema .key .textinput {
+    width: calc(var(--schema-key-width) - 10px);
+    height: var(--schema-textinput-height);
+    font-size: var(--schema-font-size);        
 }
 
 .schema .create {
