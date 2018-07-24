@@ -5,12 +5,13 @@ import json
 #############################################
 
 #############################################
-# server
-class SimpleHTTPRequestHandler(BaseHTTPRequestHandler): 
-    def server_logic(self, reqobj):
-        resobj = reqobj
-        return resobj
+# local imports
+from serverlogic import serverlogic
+#############################################
 
+#############################################
+# server
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):     
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         print("POST content length {}".format(content_length))
@@ -21,7 +22,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         try:
             reqobj = json.loads(post_data)
-            resobj = self.server_logic(reqobj)
+            resobj = serverlogic(reqobj)
         except:
             print("error processing request")
             resobj = {

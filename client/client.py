@@ -68,8 +68,21 @@ class Client:
         self.firebaseuidiv = Div().sa("id", "firebaseuidiv")        
         self.signupdiv.a(self.firebaseuidiv)
 
+    def serializeconfig(self):
+        self.sioreq({
+            "kind": "serializeconfig",
+            "data": self.configschema.toargs()
+        })
+
+    def buildconfigdiv(self):
+        self.configdiv = Div()
+        self.configdiv.a(Button("Serialize", self.serializeconfig))        
+        self.configschema = Schema(self.schemaconfig)
+        self.configdiv.a(self.configschema)
+
     def build(self):        
         self.root.innerHTML = ""        
+        self.buildconfigdiv()
         self.signupdiv = Div()
         #self.buildsignupdiv()        
         self.profiletab = Tab("profile", "Profile", self.signupdiv)
@@ -78,20 +91,7 @@ class Client:
             "fillwindow": True,
             "tabs": [
                 Tab("main", "Main", Div("contentplaceholder").html("Main.")),
-                Tab("config", "Config", Schema({                    
-                    "kind": "collection",
-                    "disposition": "dict",
-                    "childsopened": True,
-                    "childsarg": [
-                        {
-                            "kind": "collection",
-                            "disposition": "list"
-                        },
-                        {
-                            "kind": "scalar"                            
-                        }
-                    ]
-                })),
+                Tab("config", "Config", self.configdiv),
                 Tab("log", "Log", Div("contentplaceholder").html("Log.")),
                 self.profiletab,
                 Tab("about", "About", Div("contentplaceholder").html("About."))
@@ -192,11 +192,20 @@ class Client:
         }
         self.ui = __new__(firebaseui.auth.AuthUI(firebase.auth()))        
 
+    def getschemaconfigfromobj(self, obj):
+        self.schemaconfig = {
+            "kind": "collection",
+            "disposition": "dict"
+        }
+        if "schemaconfig" in obj:
+            self.schemaconfig = obj["schemaconfig"]            
+
     def siores(self, obj):
         print("<-", obj)
         if "kind" in obj:
             kind = obj["kind"]
             if kind == "connectedack":
+                self.getschemaconfigfromobj(obj)
                 self.build()
                 """
                 self.firebaseconfig = obj["firebaseconfig"]
@@ -207,6 +216,8 @@ class Client:
                 self.initializefirebaseui()
                 self.ui.start('#firebaseuidiv', self.uiConfig)                           
                 """
+            elif kind == "configsaved":
+                window.alert("Config saved, {} characters".format(obj["size"]))
 
     def startup(self):
         print("creating socket {}".format(SUBMIT_URL))

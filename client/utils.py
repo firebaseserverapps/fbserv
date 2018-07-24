@@ -7,6 +7,11 @@ else:
 
 SUBMIT_URL = ws_scheme + window.location.host
 
+def getitem(obj, key, default):
+    if key in obj:
+        return obj[key]
+    return default
+
 def cpick(cond, valuetrue, valuefalse):
     if cond:
         return valuetrue

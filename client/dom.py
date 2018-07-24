@@ -279,6 +279,22 @@ class Option(e):
         if selected:
             self.sa("selected", True)
 
+class ComboBox(e):
+    def changed(self):
+        if self.changecallback:
+            self.changecallback(self.v())
+
+    def __init__(self):        
+        super().__init__("select")
+        self.ae("change", self.changed)
+
+    def setoptions(self, options, selected, changecallback):
+        self.changecallback = changecallback
+        self.x()
+        for option in options:                        
+            self.a(Option(option[0], option[1], option[0] == selected))
+        return self
+
 class Slider(Input):
     def setmin(self, min):
         self.sa("min", min)

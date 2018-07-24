@@ -1,5 +1,6 @@
 :root {
     --schema-box-size: 36px;
+    --schema-font-size: calc(var(--schema-box-size) * 0.6);
     --schema-key-width: 150px;
     --schema-value-width: 400px;
     --schema-margin: 2px;    
@@ -15,6 +16,34 @@
     margin: var(--schema-margin);
     background-color: #ddd;    
     width: fit-content;
+}
+
+.schema .item.list {
+    border: 1px dashed #aaa;
+}
+
+.schema .item.dict {
+    border: 1px dashed #aaa;
+}
+
+.schema .value.list {
+    background-color: #dee;
+}
+
+.schema .value.dict {
+    background-color: #cce;    
+}
+
+.schema .create {
+    display: flex; justify-content: space-around; align-items: center;
+    width: var(--schema-value-width);
+    height: var(--schema-box-size);
+    background-color: #ccc;
+    margin: var(--schema-margin);
+}
+
+.schema .create .createcombo {
+    font-size: var(--schema-font-size);
 }
 
 .schema .childs {    

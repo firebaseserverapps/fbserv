@@ -8,7 +8,7 @@ from traceback import print_exc
 
 #########################################################
 # local imports
-from utils.misc import read_yaml_from_file, postjson
+from utils.misc import read_yaml_from_file, read_json_from_file, postjson
 #########################################################
 
 #########################################################
@@ -68,9 +68,11 @@ def handle_sioreq(obj):
         kind = obj["kind"]
         if kind == "connected":
             firebaseconfig = read_yaml_from_file("firebase/fbcreds.yml", {})
+            schemaconfig = read_json_from_file("schemaconfig.json", {})
             socketio.emit("siores", {
                 "kind": "connectedack",
-                "firebaseconfig": firebaseconfig
+                "firebaseconfig": firebaseconfig,
+                "schemaconfig": schemaconfig
             }, room = request.sid, namespace = "/")
     try:
         simpleresponsecontent = postjson("http://localhost:4000", obj)        

@@ -126,6 +126,16 @@ def read_yaml_from_file(path, default):
     except:
         return default
 
+def write_json_to_file(path, obj, indent = 2):    
+    json.dump(obj, open(path, "w"), indent = indent)
+    
+def read_json_from_file(path, default):
+    try:
+        obj = json.load(open(path))
+        return obj
+    except:
+        return default
+
 def os_stats_as_dict(stats, name, isdir):
     parts = name.split(".")
     ext = parts[-1]
