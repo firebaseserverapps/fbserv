@@ -1,0 +1,56 @@
+{
+  "kind": "collection",
+  "disposition": "dict",
+  "constraint": null,
+  "key": null,
+  "value": "",
+  "childsarg": [
+    {
+      "kind": "scalar",
+      "disposition": "string",
+      "constraint": null,
+      "key": null,
+      "value": "",
+      "childsarg": [],
+      "childsopened": false
+    },
+    {
+      "kind": "collection",
+      "disposition": "dict",
+      "constraint": null,
+      "key": null,
+      "value": "",
+      "childsarg": [],
+      "childsopened": false
+    },
+    {
+      "kind": "collection",
+      "disposition": "list",
+      "constraint": null,
+      "key": null,
+      "value": "",
+      "childsarg": [
+        {
+          "kind": "scalar",
+          "disposition": "string",
+          "constraint": null,
+          "key": null,
+          "value": "",
+          "childsarg": [],
+          "childsopened": false
+        },
+        {
+          "kind": "scalar",
+          "disposition": "string",
+          "constraint": null,
+          "key": null,
+          "value": "",
+          "childsarg": [],
+          "childsopened": false
+        }
+      ],
+      "childsopened": false
+    }
+  ],
+  "childsopened": true
+}

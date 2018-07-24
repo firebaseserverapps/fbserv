@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-24 14:22:28
+// Transcrypt'ed from Python, 2018-07-24 19:16:18
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2288,11 +2288,21 @@ function app () {
 							self.firebaseuidiv = Div ().sa ('id', 'firebaseuidiv');
 							self.signupdiv.a (self.firebaseuidiv);
 						});},
+						get serializeconfig () {return __get__ (this, function (self) {
+							self.sioreq (dict ({'kind': 'serializeconfig', 'data': self.configschema.toargs ()}));
+						});},
+						get buildconfigdiv () {return __get__ (this, function (self) {
+							self.configdiv = Div ();
+							self.configdiv.a (Button ('Serialize', self.serializeconfig));
+							self.configschema = Schema (self.schemaconfig);
+							self.configdiv.a (self.configschema);
+						});},
 						get build () {return __get__ (this, function (self) {
 							self.root.innerHTML = '';
+							self.buildconfigdiv ();
 							self.signupdiv = Div ();
 							self.profiletab = Tab ('profile', 'Profile', self.signupdiv);
-							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('config', 'Config', Schema (dict ({'kind': 'collection', 'disposition': 'dict', 'childsopened': true, 'childsarg': list ([dict ({'kind': 'collection', 'disposition': 'list'}), dict ({'kind': 'scalar'})])}))), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'config'}));
+							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('config', 'Config', self.configdiv), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'config'}));
 							self.root.appendChild (self.mainelement.e);
 						});},
 						get onconnect () {return __get__ (this, function (self) {
@@ -2382,12 +2392,22 @@ function app () {
 							self.uiConfig = dict ({'signInSuccessUrl': '/', 'signInOptions': list ([firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.PROVIDER_ID]), 'tosUrl': '/tos'});
 							self.ui = new firebaseui.auth.AuthUI (firebase.auth ());
 						});},
+						get getschemaconfigfromobj () {return __get__ (this, function (self, obj) {
+							self.schemaconfig = dict ({'kind': 'collection', 'disposition': 'dict'});
+							if (__in__ ('schemaconfig', obj)) {
+								self.schemaconfig = obj ['schemaconfig'];
+							}
+						});},
 						get siores () {return __get__ (this, function (self, obj) {
 							print ('<-', obj);
 							if (__in__ ('kind', obj)) {
 								var kind = obj ['kind'];
 								if (kind == 'connectedack') {
+									self.getschemaconfigfromobj (obj);
 									self.build ();
+								}
+								else if (kind == 'configsaved') {
+									window.alert ('Config saved, {} characters'.format (obj ['size']));
 								}
 							}
 						});},
@@ -2425,6 +2445,7 @@ function app () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'dom', {
@@ -2719,6 +2740,28 @@ function app () {
 							}
 						});}
 					});
+					var ComboBox = __class__ ('ComboBox', [e], {
+						__module__: __name__,
+						get changed () {return __get__ (this, function (self) {
+							if (self.changecallback) {
+								self.changecallback (self.v ());
+							}
+						});},
+						get __init__ () {return __get__ (this, function (self) {
+							__super__ (ComboBox, '__init__') (self, 'select');
+							self.ae ('change', self.changed);
+						});},
+						get setoptions () {return __get__ (this, function (self, options, selected, changecallback) {
+							self.changecallback = changecallback;
+							self.x ();
+							var __iterable0__ = options;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var option = __iterable0__ [__index0__];
+								self.a (Option (option [0], option [1], option [0] == selected));
+							}
+							return self;
+						});}
+					});
 					var Slider = __class__ ('Slider', [Input], {
 						__module__: __name__,
 						get setmin () {return __get__ (this, function (self, min) {
@@ -2868,6 +2911,7 @@ function app () {
 						__all__.Button = Button;
 						__all__.Canvas = Canvas;
 						__all__.CheckBox = CheckBox;
+						__all__.ComboBox = ComboBox;
 						__all__.Div = Div;
 						__all__.FileInput = FileInput;
 						__all__.Form = Form;
@@ -2899,6 +2943,8 @@ function app () {
 					var __name__ = 'schema';
 					var e = __init__ (__world__.dom).e;
 					var Div = __init__ (__world__.dom).Div;
+					var ComboBox = __init__ (__world__.dom).ComboBox;
+					var getitem = __init__ (__world__.utils).getitem;
 					var SCHEMA_DEFAULT_ARGS = list ([list (['kind', 'scalar']), list (['disposition', 'string']), list (['constraint', null]), list (['key', null]), list (['value', '']), list (['childsarg', list ([])]), list (['childsopened', false])]);
 					var iscollection = function (schema) {
 						if (schema) {
@@ -2923,11 +2969,28 @@ function app () {
 						get copydivclicked () {return __get__ (this, function (self) {
 							print (self.tojsontext ());
 						});},
+						get openbuttonclicked () {return __get__ (this, function (self) {
+							self.childsopened = !(self.childsopened);
+							self.build ();
+						});},
+						get createcombochanged () {return __get__ (this, function (self, v) {
+							if (v == 'scalar') {
+								var sch = Schema (dict ({'parent': self, 'kind': 'scalar'}));
+							}
+							else if (v == 'dict') {
+								var sch = Schema (dict ({'parent': self, 'kind': 'collection', 'disposition': 'dict'}));
+							}
+							else if (v == 'list') {
+								var sch = Schema (dict ({'parent': self, 'kind': 'collection', 'disposition': 'list'}));
+							}
+							self.childs.append (sch);
+							self.build ();
+						});},
 						get build () {return __get__ (this, function (self) {
 							self.x ().ac ('schema');
-							self.itemdiv = Div ('item');
+							self.itemdiv = Div (list (['item', self.disposition]));
 							self.keydiv = Div ('key');
-							self.valuediv = Div ('value');
+							self.valuediv = Div (list (['value', self.disposition]));
 							self.helpdiv = Div (list (['box', 'help'])).html ('?');
 							self.copydiv = Div (list (['box', 'copy'])).html ('C').ae ('mousedown', self.copydivclicked);
 							self.deletediv = Div (list (['box', 'delete'])).html ('X');
@@ -2936,11 +2999,16 @@ function app () {
 							}
 							self.itemdiv.a (list ([self.valuediv, self.helpdiv, self.copydiv, self.deletediv]));
 							if (iscollection (self)) {
-								self.openbutton = Div ('openbutton');
+								self.openbutton = Div ('openbutton').ae ('mousedown', self.openbuttonclicked);
 								self.valuediv.a (self.openbutton);
 							}
 							self.childsdiv = Div ('childs');
 							if (self.childsopened) {
+								self.creatediv = Div ('create');
+								var cc = self.createcombo;
+								self.createcombo = ComboBox ().setoptions (list ([list (['create', 'Create new']), list (['scalar', 'Scalar']), list (['dict', 'Dict']), list (['list', 'List'])]), 'create', self.createcombochanged).ac ('createcombo');
+								self.creatediv.a (self.createcombo);
+								self.childsdiv.a (self.creatediv);
 								var __iterable0__ = self.childs;
 								for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
 									var child = __iterable0__ [__index0__];
@@ -2975,11 +3043,11 @@ function app () {
 								var args = dict ({});
 							};
 							__super__ (Schema, '__init__') (self, 'div');
-							self.parent = args.py_get ('parent', null);
+							self.parent = getitem (args, 'parent', null);
 							var __iterable0__ = SCHEMA_DEFAULT_ARGS;
 							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
 								var arg = __iterable0__ [__index0__];
-								self [arg [0]] = args.py_get (arg [0], arg [1]);
+								self [arg [0]] = getitem (args, arg [0], arg [1]);
 							}
 							self.childs = list ([]);
 							var __iterable0__ = self.childsarg;
@@ -2994,13 +3062,16 @@ function app () {
 					});
 					__pragma__ ('<use>' +
 						'dom' +
+						'utils' +
 					'</use>')
 					__pragma__ ('<all>')
+						__all__.ComboBox = ComboBox;
 						__all__.Div = Div;
 						__all__.SCHEMA_DEFAULT_ARGS = SCHEMA_DEFAULT_ARGS;
 						__all__.Schema = Schema;
 						__all__.__name__ = __name__;
 						__all__.e = e;
+						__all__.getitem = getitem;
 						__all__.iscollection = iscollection;
 						__all__.isdict = isdict;
 						__all__.islist = islist;
@@ -3009,7 +3080,6 @@ function app () {
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'utils', {
@@ -3024,6 +3094,12 @@ function app () {
 						var ws_scheme = 'ws://';
 					}
 					var SUBMIT_URL = ws_scheme + window.location.host;
+					var getitem = function (obj, key, py_default) {
+						if (__in__ (key, obj)) {
+							return obj [key];
+						}
+						return py_default;
+					};
 					var cpick = function (cond, valuetrue, valuefalse) {
 						if (cond) {
 							return valuetrue;
@@ -3065,6 +3141,7 @@ function app () {
 						__all__.ge = ge;
 						__all__.getScrollBarWidth = getScrollBarWidth;
 						__all__.getelse = getelse;
+						__all__.getitem = getitem;
 						__all__.ws_scheme = ws_scheme;
 					__pragma__ ('</all>')
 				}
