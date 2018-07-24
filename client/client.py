@@ -78,9 +78,19 @@ class Client:
             "fillwindow": True,
             "tabs": [
                 Tab("main", "Main", Div("contentplaceholder").html("Main.")),
-                Tab("config", "Config", Schema({
+                Tab("config", "Config", Schema({                    
                     "kind": "collection",
-                    "disposition": "dict"
+                    "disposition": "dict",
+                    "childsopened": True,
+                    "childsarg": [
+                        {
+                            "kind": "collection",
+                            "disposition": "list"
+                        },
+                        {
+                            "kind": "scalar"                            
+                        }
+                    ]
                 })),
                 Tab("log", "Log", Div("contentplaceholder").html("Log.")),
                 self.profiletab,

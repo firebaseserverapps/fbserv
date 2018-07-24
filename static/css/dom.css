@@ -6,6 +6,10 @@
     --schema-open-button-size: calc(var(--schema-box-size) - 2*var(--schema-margin));
 }
 
+.schema .container {    
+    width: fit-content;
+}
+
 .schema .item {
     display: flex;
     margin: var(--schema-margin);
@@ -13,11 +17,16 @@
     width: fit-content;
 }
 
+.schema .childs {    
+    width: fit-content;
+    margin-left: 20px;    
+}
+
 .schema .openbutton {
     display: flex; justify-content: space-around; align-items: center;    
     min-width: var(--schema-box-size);
     height: var(--schema-open-button-size);    
-    background-color: #efe;
+    background-color: #afa;
     margin: var(--schema-margin);
     cursor: pointer;
 }
