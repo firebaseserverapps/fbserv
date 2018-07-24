@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-24 11:39:34
+// Transcrypt'ed from Python, 2018-07-24 14:22:28
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2292,7 +2292,7 @@ function app () {
 							self.root.innerHTML = '';
 							self.signupdiv = Div ();
 							self.profiletab = Tab ('profile', 'Profile', self.signupdiv);
-							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('config', 'Config', Schema (dict ({'kind': 'collection', 'disposition': 'dict'}))), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'config'}));
+							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('config', 'Config', Schema (dict ({'kind': 'collection', 'disposition': 'dict', 'childsopened': true, 'childsarg': list ([dict ({'kind': 'collection', 'disposition': 'list'}), dict ({'kind': 'scalar'})])}))), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'config'}));
 							self.root.appendChild (self.mainelement.e);
 						});},
 						get onconnect () {return __get__ (this, function (self) {
@@ -2899,6 +2899,7 @@ function app () {
 					var __name__ = 'schema';
 					var e = __init__ (__world__.dom).e;
 					var Div = __init__ (__world__.dom).Div;
+					var SCHEMA_DEFAULT_ARGS = list ([list (['kind', 'scalar']), list (['disposition', 'string']), list (['constraint', null]), list (['key', null]), list (['value', '']), list (['childsarg', list ([])]), list (['childsopened', false])]);
 					var iscollection = function (schema) {
 						if (schema) {
 							return schema.kind == 'collection';
@@ -2919,13 +2920,16 @@ function app () {
 					};
 					var Schema = __class__ ('Schema', [e], {
 						__module__: __name__,
+						get copydivclicked () {return __get__ (this, function (self) {
+							print (self.tojsontext ());
+						});},
 						get build () {return __get__ (this, function (self) {
 							self.x ().ac ('schema');
 							self.itemdiv = Div ('item');
 							self.keydiv = Div ('key');
 							self.valuediv = Div ('value');
 							self.helpdiv = Div (list (['box', 'help'])).html ('?');
-							self.copydiv = Div (list (['box', 'copy'])).html ('C');
+							self.copydiv = Div (list (['box', 'copy'])).html ('C').ae ('mousedown', self.copydivclicked);
 							self.deletediv = Div (list (['box', 'delete'])).html ('X');
 							if (isdict (self.parent)) {
 								self.itemdiv.a (self.keydiv);
@@ -2935,7 +2939,36 @@ function app () {
 								self.openbutton = Div ('openbutton');
 								self.valuediv.a (self.openbutton);
 							}
-							self.a (self.itemdiv);
+							self.childsdiv = Div ('childs');
+							if (self.childsopened) {
+								var __iterable0__ = self.childs;
+								for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+									var child = __iterable0__ [__index0__];
+									self.childsdiv.a (child);
+								}
+							}
+							self.container = Div ('container');
+							self.container.a (list ([self.itemdiv, self.childsdiv]));
+							self.a (self.container);
+							return self;
+						});},
+						get tojsontext () {return __get__ (this, function (self) {
+							return JSON.stringify (self.toargs (), null, 2);
+						});},
+						get toargs () {return __get__ (this, function (self) {
+							var args = dict ({});
+							var __iterable0__ = SCHEMA_DEFAULT_ARGS;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var arg = __iterable0__ [__index0__];
+								args [arg [0]] = self [arg [0]];
+							}
+							args ['childsarg'] = list ([]);
+							var __iterable0__ = self.childs;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var child = __iterable0__ [__index0__];
+								args ['childsarg'].append (child.toargs ());
+							}
+							return args;
 						});},
 						get __init__ () {return __get__ (this, function (self, args) {
 							if (typeof args == 'undefined' || (args != null && args .hasOwnProperty ("__kwargtrans__"))) {;
@@ -2943,11 +2976,19 @@ function app () {
 							};
 							__super__ (Schema, '__init__') (self, 'div');
 							self.parent = args.py_get ('parent', null);
-							self.kind = args.py_get ('kind', 'scalar');
-							self.disposition = args.py_get ('disposition', 'string');
-							self.constraint = args.py_get ('constraint', null);
-							self.key = args.py_get ('key', null);
-							self.value = args.py_get ('value', '');
+							var __iterable0__ = SCHEMA_DEFAULT_ARGS;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var arg = __iterable0__ [__index0__];
+								self [arg [0]] = args.py_get (arg [0], arg [1]);
+							}
+							self.childs = list ([]);
+							var __iterable0__ = self.childsarg;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var childarg = __iterable0__ [__index0__];
+								childarg ['parent'] = self;
+								var child = Schema (childarg);
+								self.childs.append (child);
+							}
 							self.build ();
 						});}
 					});
@@ -2956,6 +2997,7 @@ function app () {
 					'</use>')
 					__pragma__ ('<all>')
 						__all__.Div = Div;
+						__all__.SCHEMA_DEFAULT_ARGS = SCHEMA_DEFAULT_ARGS;
 						__all__.Schema = Schema;
 						__all__.__name__ = __name__;
 						__all__.e = e;
