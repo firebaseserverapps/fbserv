@@ -1,3 +1,63 @@
+:root {
+    --schema-box-size: 36px;
+    --schema-key-width: 150px;
+    --schema-value-width: 400px;
+    --schema-margin: 2px;    
+    --schema-open-button-size: calc(var(--schema-box-size) - 2*var(--schema-margin));
+}
+
+.schema .item {
+    display: flex;
+    margin: var(--schema-margin);
+    background-color: #ddd;    
+    width: fit-content;
+}
+
+.schema .openbutton {
+    display: flex; justify-content: space-around; align-items: center;    
+    min-width: var(--schema-box-size);
+    height: var(--schema-open-button-size);    
+    background-color: #efe;
+    margin: var(--schema-margin);
+    cursor: pointer;
+}
+
+.schema .key {
+    display: flex; justify-content: space-around; align-items: center;
+    width: var(--schema-key-width);
+    height: var(--schema-box-size);
+    background-color: #eee;
+    margin: var(--schema-margin);    
+}
+
+.schema .value {
+    display: flex; justify-content: space-around; align-items: center;
+    width: var(--schema-value-width);
+    height: var(--schema-box-size);
+    background-color: #ffe;
+    margin: var(--schema-margin);
+}
+
+.schema .box {
+    display: flex; justify-content: space-around; align-items: center;
+    width: var(--schema-box-size);
+    height: var(--schema-box-size);    
+    margin: var(--schema-margin);
+    cursor: pointer;
+}
+
+.schema .box.help {
+    background-color: #ffe;
+}
+
+.schema .box.copy {
+    background-color: #eef;
+}
+
+.schema .box.delete {
+    background-color: #fee;
+}
+
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
       -webkit-user-select: none; /* Safari */

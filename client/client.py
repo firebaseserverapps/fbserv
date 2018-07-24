@@ -2,6 +2,7 @@ from utils import SUBMIT_URL
 from utils import ge, cpick, getelse
 from dom import Div, Span, TextInput, PasswordInput, Button
 from widgets import TabPane, Tab
+from schema import Schema
 
 ######################################################
 # client
@@ -69,18 +70,23 @@ class Client:
 
     def build(self):        
         self.root.innerHTML = ""        
-        self.buildsignupdiv()
+        self.signupdiv = Div()
+        #self.buildsignupdiv()        
         self.profiletab = Tab("profile", "Profile", self.signupdiv)
         self.mainelement = TabPane({
             "id": "maintabpane",
             "fillwindow": True,
             "tabs": [
                 Tab("main", "Main", Div("contentplaceholder").html("Main.")),
+                Tab("config", "Config", Schema({
+                    "kind": "collection",
+                    "disposition": "dict"
+                })),
                 Tab("log", "Log", Div("contentplaceholder").html("Log.")),
                 self.profiletab,
                 Tab("about", "About", Div("contentplaceholder").html("About."))
             ],
-            "selected": "profile"
+            "selected": "config"
         })        
         self.root.appendChild(self.mainelement.e)
 
@@ -182,6 +188,7 @@ class Client:
             kind = obj["kind"]
             if kind == "connectedack":
                 self.build()
+                """
                 self.firebaseconfig = obj["firebaseconfig"]
                 print("initializing firebase from", self.firebaseconfig)
                 firebase.initializeApp(self.firebaseconfig)
@@ -189,6 +196,7 @@ class Client:
                 firebase.auth().onAuthStateChanged(self.authstatechanged)
                 self.initializefirebaseui()
                 self.ui.start('#firebaseuidiv', self.uiConfig)                           
+                """
 
     def startup(self):
         print("creating socket {}".format(SUBMIT_URL))
