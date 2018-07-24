@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-21 17:56:10
+// Transcrypt'ed from Python, 2018-07-24 11:39:34
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2218,6 +2218,7 @@ function app () {
 					var Button = __init__ (__world__.dom).Button;
 					var TabPane = __init__ (__world__.widgets).TabPane;
 					var Tab = __init__ (__world__.widgets).Tab;
+					var Schema = __init__ (__world__.schema).Schema;
 					var Client = __class__ ('Client', [object], {
 						__module__: __name__,
 						get __init__ () {return __get__ (this, function (self) {
@@ -2289,9 +2290,9 @@ function app () {
 						});},
 						get build () {return __get__ (this, function (self) {
 							self.root.innerHTML = '';
-							self.buildsignupdiv ();
+							self.signupdiv = Div ();
 							self.profiletab = Tab ('profile', 'Profile', self.signupdiv);
-							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'profile'}));
+							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('config', 'Config', Schema (dict ({'kind': 'collection', 'disposition': 'dict'}))), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'config'}));
 							self.root.appendChild (self.mainelement.e);
 						});},
 						get onconnect () {return __get__ (this, function (self) {
@@ -2387,13 +2388,6 @@ function app () {
 								var kind = obj ['kind'];
 								if (kind == 'connectedack') {
 									self.build ();
-									self.firebaseconfig = obj ['firebaseconfig'];
-									print ('initializing firebase from', self.firebaseconfig);
-									firebase.initializeApp (self.firebaseconfig);
-									self.database = firebase.database ();
-									firebase.auth ().onAuthStateChanged (self.authstatechanged);
-									self.initializefirebaseui ();
-									self.ui.start ('#firebaseuidiv', self.uiConfig);
 								}
 							}
 						});},
@@ -2407,6 +2401,7 @@ function app () {
 					});
 					__pragma__ ('<use>' +
 						'dom' +
+						'schema' +
 						'utils' +
 						'widgets' +
 					'</use>')
@@ -2416,6 +2411,7 @@ function app () {
 						__all__.Div = Div;
 						__all__.PasswordInput = PasswordInput;
 						__all__.SUBMIT_URL = SUBMIT_URL;
+						__all__.Schema = Schema;
 						__all__.Span = Span;
 						__all__.Tab = Tab;
 						__all__.TabPane = TabPane;
@@ -2893,6 +2889,85 @@ function app () {
 			}
 		}
 	);
+
+	__nest__ (
+		__all__,
+		'schema', {
+			__all__: {
+				__inited__: false,
+				__init__: function (__all__) {
+					var __name__ = 'schema';
+					var e = __init__ (__world__.dom).e;
+					var Div = __init__ (__world__.dom).Div;
+					var iscollection = function (schema) {
+						if (schema) {
+							return schema.kind == 'collection';
+						}
+						return false;
+					};
+					var isdict = function (schema) {
+						if (iscollection (schema)) {
+							return schema.disposition == 'dict';
+						}
+						return false;
+					};
+					var islist = function (schema) {
+						if (iscollection (schema)) {
+							return schema.disposition == 'list';
+						}
+						return false;
+					};
+					var Schema = __class__ ('Schema', [e], {
+						__module__: __name__,
+						get build () {return __get__ (this, function (self) {
+							self.x ().ac ('schema');
+							self.itemdiv = Div ('item');
+							self.keydiv = Div ('key');
+							self.valuediv = Div ('value');
+							self.helpdiv = Div (list (['box', 'help'])).html ('?');
+							self.copydiv = Div (list (['box', 'copy'])).html ('C');
+							self.deletediv = Div (list (['box', 'delete'])).html ('X');
+							if (isdict (self.parent)) {
+								self.itemdiv.a (self.keydiv);
+							}
+							self.itemdiv.a (list ([self.valuediv, self.helpdiv, self.copydiv, self.deletediv]));
+							if (iscollection (self)) {
+								self.openbutton = Div ('openbutton');
+								self.valuediv.a (self.openbutton);
+							}
+							self.a (self.itemdiv);
+						});},
+						get __init__ () {return __get__ (this, function (self, args) {
+							if (typeof args == 'undefined' || (args != null && args .hasOwnProperty ("__kwargtrans__"))) {;
+								var args = dict ({});
+							};
+							__super__ (Schema, '__init__') (self, 'div');
+							self.parent = args.py_get ('parent', null);
+							self.kind = args.py_get ('kind', 'scalar');
+							self.disposition = args.py_get ('disposition', 'string');
+							self.constraint = args.py_get ('constraint', null);
+							self.key = args.py_get ('key', null);
+							self.value = args.py_get ('value', '');
+							self.build ();
+						});}
+					});
+					__pragma__ ('<use>' +
+						'dom' +
+					'</use>')
+					__pragma__ ('<all>')
+						__all__.Div = Div;
+						__all__.Schema = Schema;
+						__all__.__name__ = __name__;
+						__all__.e = e;
+						__all__.iscollection = iscollection;
+						__all__.isdict = isdict;
+						__all__.islist = islist;
+					__pragma__ ('</all>')
+				}
+			}
+		}
+	);
+
 	__nest__ (
 		__all__,
 		'utils', {
