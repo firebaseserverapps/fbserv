@@ -74,9 +74,22 @@ class Client:
             "data": self.configschema.toargs()
         })
 
+    def storecloud(self):
+        self.sioreq({
+            "kind": "storecloudconfig",
+            "data": self.configschema.toargs()
+        })
+
+    def retrievecloud(self):
+        self.sioreq({
+            "kind": "retrievecloudconfig"
+        })
+
     def buildconfigdiv(self):
         self.configdiv = Div()
         self.configdiv.a(Button("Serialize", self.serializeconfig))        
+        self.configdiv.a(Button("Store cloud", self.storecloud))        
+        self.configdiv.a(Button("Retrieve cloud", self.retrievecloud))        
         self.configschema = Schema(self.schemaconfig)
         self.configdiv.a(self.configschema)
 
@@ -218,6 +231,10 @@ class Client:
                 """
             elif kind == "configsaved":
                 window.alert("Config saved, {} characters".format(obj["size"]))
+            elif kind == "setcloudconfig":
+                self.getschemaconfigfromobj(obj)
+                self.build()
+                setTimeout(lambda: window.alert("Config set from cloud."), 10)
 
     def startup(self):
         print("creating socket {}".format(SUBMIT_URL))
