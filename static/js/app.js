@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-24 23:23:13
+// Transcrypt'ed from Python, 2018-07-25 19:43:45
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2291,9 +2291,17 @@ function app () {
 						get serializeconfig () {return __get__ (this, function (self) {
 							self.sioreq (dict ({'kind': 'serializeconfig', 'data': self.configschema.toargs ()}));
 						});},
+						get storecloud () {return __get__ (this, function (self) {
+							self.sioreq (dict ({'kind': 'storecloudconfig', 'data': self.configschema.toargs ()}));
+						});},
+						get retrievecloud () {return __get__ (this, function (self) {
+							self.sioreq (dict ({'kind': 'retrievecloudconfig'}));
+						});},
 						get buildconfigdiv () {return __get__ (this, function (self) {
 							self.configdiv = Div ();
 							self.configdiv.a (Button ('Serialize', self.serializeconfig));
+							self.configdiv.a (Button ('Store cloud', self.storecloud));
+							self.configdiv.a (Button ('Retrieve cloud', self.retrievecloud));
 							self.configschema = Schema (self.schemaconfig);
 							self.configdiv.a (self.configschema);
 						});},
@@ -2409,6 +2417,13 @@ function app () {
 								else if (kind == 'configsaved') {
 									window.alert ('Config saved, {} characters'.format (obj ['size']));
 								}
+								else if (kind == 'setcloudconfig') {
+									self.getschemaconfigfromobj (obj);
+									self.build ();
+									setTimeout ((function __lambda__ () {
+										return window.alert ('Config set from cloud.');
+									}), 10);
+								}
 							}
 						});},
 						get startup () {return __get__ (this, function (self) {
@@ -2445,7 +2460,6 @@ function app () {
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'dom', {
@@ -3099,6 +3113,7 @@ function app () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'utils', {
