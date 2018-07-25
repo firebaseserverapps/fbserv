@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2710e8bfd1f8042d9ef921c5e514b67fd48abda5cd708e0eb2364dc6d2411aaa"
+            "sha256": "5fc1edd1d541a7c5d57baec1a2a738cf83778cc298fc56f2f20ca08000a3d2cb"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -198,6 +198,13 @@
             "index": "pypi",
             "version": "==19.9.0"
         },
+        "heroku3": {
+            "hashes": [
+                "sha256:ceb8757062007d480717799f13cf9a97bc6161354211404d6284d8a42e11fc70"
+            ],
+            "index": "pypi",
+            "version": "==3.3.0"
+        },
         "idna": {
             "hashes": [
                 "sha256:156a6814fb5ac1fc6850fb002e0852d56c0c8d2531923a51032d1b70760e186e",
@@ -300,6 +307,14 @@
             ],
             "version": "==0.2.2"
         },
+        "python-dateutil": {
+            "hashes": [
+                "sha256:3acbef017340600e9ff8f2994d8f7afd6eacb295383f286466a6df3961e486f0",
+                "sha256:537bf2a8f8ce6f6862ad705cd68f9e405c0b5db014aa40fa29eab4335d4b1716",
+                "sha256:62a2f8df3d66f878373fd0072eacf4ee52194ba302e00082828e0d263b0418d2"
+            ],
+            "version": "==2.6.0"
+        },
         "python-engineio": {
             "hashes": [
                 "sha256:abf0d11098643eb1278d2db4dfbd13c0fe3cbfa99315572fd1c223277df62f2e",
@@ -359,6 +374,12 @@
             ],
             "index": "pypi",
             "version": "==3.13.0"
+        },
+        "simplejson": {
+            "hashes": [
+                "sha256:054926f2a16e3f1974e4f70bc2c640e4566becf3103ecf4342fa9fb1eb3ba1d8"
+            ],
+            "version": "==3.3.1"
         },
         "six": {
             "hashes": [

@@ -12,6 +12,7 @@ eventlet = "*"
 "urllib3" = {extras = ["secure"]}
 selenium = "*"
 pyyaml = "*"
+"heroku3" = "*"
 
 [dev-packages]
 

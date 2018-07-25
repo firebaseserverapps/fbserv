@@ -3,6 +3,9 @@
 /client/__javascript__/*
 /client/app.js
 
+/firebase/fbsacckeyorig.json
+/firebase/fbsacckey.json
+
 
 /cache/*
 
