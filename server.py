@@ -8,6 +8,8 @@ from traceback import print_exc
 
 #########################################################
 # local imports
+import config
+
 from utils.misc import read_yaml_from_file, read_json_from_file, postjson
 #########################################################
 
@@ -42,8 +44,6 @@ def printreq(req):
             print(key, req.__dict__[key])
     print(f"{SEP}{SEP}{SEP}")
 
-def randurl():
-    return random.randint(1e9,1e10)
 #########################################################
 
 #########################################################
@@ -56,7 +56,7 @@ def tos():
 @app.route("/")
 def index():
     printreq(request)
-    return render_template("index.html", randurl = randurl)
+    return render_template("index.html", config = config)
 #########################################################
 
 #########################################################

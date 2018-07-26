@@ -7,6 +7,18 @@ else:
 
 SUBMIT_URL = ws_scheme + window.location.host
 
+def getrec(path, currobj):
+    parts = path.split("/")
+    key = parts[0]
+    if currobj["disposition"] == "dict":
+        for child in currobj["childsarg"]:
+            if child["key"] == key:
+                if len(parts) == 1:
+                    return child["value"]
+                else:
+                    return getrec("/".join(parts[1:]), child)
+    return None
+
 def getitem(obj, key, default):
     if key in obj:
         return obj[key]

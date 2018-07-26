@@ -46,12 +46,14 @@
     width: calc(var(--schema-value-width) - 10px);
     height: var(--schema-textinput-height);
     font-size: var(--schema-font-size);
+    padding-left: 5px;
 }
 
 .schema .key .textinput {
     width: calc(var(--schema-key-width) - 10px);
     height: var(--schema-textinput-height);
     font-size: var(--schema-font-size);        
+    padding-left: 5px;
 }
 
 .schema .create {

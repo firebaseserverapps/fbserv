@@ -1,5 +1,4 @@
-from utils import SUBMIT_URL
-from utils import ge, cpick, getelse
+from utils import SUBMIT_URL, ge, cpick, getelse, getrec
 from dom import Div, Span, TextInput, PasswordInput, Button
 from widgets import TabPane, Tab
 from schema import Schema
@@ -96,8 +95,9 @@ class Client:
     def build(self):        
         self.root.innerHTML = ""        
         self.buildconfigdiv()
-        self.signupdiv = Div()
-        #self.buildsignupdiv()        
+        self.signupdiv = Div()        
+        if self.authenabled:
+            self.buildsignupdiv()        
         self.profiletab = Tab("profile", "Profile", self.signupdiv)
         self.mainelement = TabPane({
             "id": "maintabpane",
@@ -212,6 +212,7 @@ class Client:
         }
         if "schemaconfig" in obj:
             self.schemaconfig = obj["schemaconfig"]            
+        self.authenabled = ( getrec("global/auth/enabled", self.schemaconfig) == "true" )
 
     def siores(self, obj):
         print("<-", obj)
@@ -220,15 +221,14 @@ class Client:
             if kind == "connectedack":
                 self.getschemaconfigfromobj(obj)
                 self.build()
-                """
-                self.firebaseconfig = obj["firebaseconfig"]
-                print("initializing firebase from", self.firebaseconfig)
-                firebase.initializeApp(self.firebaseconfig)
-                self.database = firebase.database()
-                firebase.auth().onAuthStateChanged(self.authstatechanged)
-                self.initializefirebaseui()
-                self.ui.start('#firebaseuidiv', self.uiConfig)                           
-                """
+                if self.authenabled:                
+                    self.firebaseconfig = obj["firebaseconfig"]
+                    print("initializing firebase from", self.firebaseconfig)
+                    firebase.initializeApp(self.firebaseconfig)
+                    self.database = firebase.database()
+                    firebase.auth().onAuthStateChanged(self.authstatechanged)
+                    self.initializefirebaseui()
+                    self.ui.start('#firebaseuidiv', self.uiConfig)                                           
             elif kind == "configsaved":
                 window.alert("Config saved, {} characters".format(obj["size"]))
             elif kind == "setcloudconfig":

@@ -5,17 +5,21 @@
     <meta charset="utf-8">
     <title>Lichess gui bot</title>
     <link rel="stylesheet" href="static/css/reset.css">
-    <link rel="stylesheet" href="static/css/dom.css?rnd={{ randurl() }}">
-    <link rel="stylesheet" href="static/css/app.css?rnd={{ randurl() }}">
-    <!-- <link rel="stylesheet" href="static/css/firebaseui.css"> -->
+    <link rel="stylesheet" href="static/css/dom.css?rnd={{ config.randurl() }}">
+    <link rel="stylesheet" href="static/css/app.css?rnd={{ config.randurl() }}">
+    {% if config.authenabled() is eq "true" %}
+        <link rel="stylesheet" href="static/css/firebaseui.css">
+    {% endif %}
     <link rel="shortcut icon" href="{{ url_for("static", filename="img/favicon.ico") }}">
     <!-- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script> -->
     <script type="text/javascript" src="static/js/socket.io.min.js"></script>
-    <!-- <script type="text/javascript" src="static/js/firebase.js"></script> -->
-    <!-- <script type="text/javascript" src="static/js/firebase-app.js"></script>
-    <script type="text/javascript" src="static/js/firebase-auth.js"></script>
-    <script type="text/javascript" src="static/js/firebase-database.js"></script>
-    <script type="text/javascript" src="static/js/firebaseui.js"></script> -->
+    {% if config.authenabled() is eq "true" %}
+        <!-- <script type="text/javascript" src="static/js/firebase.js"></script> -->
+        <script type="text/javascript" src="static/js/firebase-app.js"></script>
+        <script type="text/javascript" src="static/js/firebase-auth.js"></script>
+        <script type="text/javascript" src="static/js/firebase-database.js"></script>
+        <script type="text/javascript" src="static/js/firebaseui.js"></script>
+    {% endif %}
 </head>
 
 <body>        
@@ -26,7 +30,7 @@
             </div>            
         </div>
     </div>
-    <script src="static/js/app.js?rnd={{ randurl() }}"></script>
+    <script src="static/js/app.js?rnd={{ config.randurl() }}"></script>
 </body>
 
 </html>
