@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-26 14:48:38
+// Transcrypt'ed from Python, 2018-07-26 18:49:54
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2271,6 +2271,10 @@ function app () {
 								return window.alert ('{}'.format (error));
 							}));
 						});},
+						get updatedetailscallback () {return __get__ (this, function (self) {
+							var userdetails = dict ({'displayname': self.displaynameinput.getText (), 'photourl': self.photourlinput.getText ()});
+							self.sioreq (dict ({'kind': 'updateuserdetails', 'uid': self.uid, 'userdetails': userdetails}));
+						});},
 						get buildsignupdiv () {return __get__ (this, function (self) {
 							self.signupdiv = Div ();
 							self.signupmaildiv = Div ('signupmaildiv');
@@ -2285,7 +2289,14 @@ function app () {
 							self.resetpasswordbutton = Button ('Reset password', self.resetpasswordcallback);
 							self.userinfodiv = Div ('userinfodiv');
 							self.signupmaildiv.a (list ([self.emaillabel, self.emailinput, self.passwordlabel, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.resetpasswordbutton]));
-							self.signupdiv.a (list ([self.signupmaildiv, self.userinfodiv]));
+							self.userdetailsdiv = Div ('userdetailsdiv');
+							self.displaynamelabel = Span ().html ('Display name:');
+							self.displaynameinput = TextInput ().ac ('profiletextinput').w (250);
+							self.photourllabel = Span ().html ('Photo url:');
+							self.photourlinput = TextInput ().ac ('profiletextinput').w (250);
+							self.updatedetailsbutton = Button ('Update details', self.updatedetailscallback);
+							self.userdetailsdiv.a (list ([self.displaynamelabel, self.displaynameinput, self.photourllabel, self.photourlinput, self.updatedetailsbutton]));
+							self.signupdiv.a (list ([self.signupmaildiv, self.userdetailsdiv, self.userinfodiv]));
 							self.firebaseuidiv = Div ().sa ('id', 'firebaseuidiv');
 							self.signupdiv.a (self.firebaseuidiv);
 						});},
@@ -2388,10 +2399,16 @@ function app () {
 								self.nameinfodiv = Div ().html ("name : <span class='{}'>{}</span>".format (cpick (self.displayName, 'uiinfo', 'uiinfored'), getelse (self.displayName, '&lt;NA&gt;'))).pt (5);
 								self.emailinfodiv = Div ().html ("email : <span class='{}'>{}</span>".format (cpick (self.email, 'uiinfo', 'uiinfored'), getelse (self.email, '&lt;NA&gt;')));
 								self.verifiedinfodiv = Div ().html ("status : <span class='{}'>{}</span>".format (cpick (self.userverified (), 'uiinfo', 'uiinfored'), self.userstatusverbal ()));
-								self.uidinfodiv = Div ().html ("uid : <span class='uiinfo'>{}</span>".format (self.uid)).pb (5);
-								self.userinfodiv.x ().a (list ([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.uidinfodiv]));
+								self.photourldiv = Div ().html ("photo url : <span class='{}'>{}</span>".format (cpick (self.photoURL, 'uiinfo', 'uiinfored'), getelse (self.photoURL, '&lt;NA&gt;')));
+								self.uidinfodiv = Div ().html ("uid : <span class='uiinfo'>{}</span>".format (self.uid)).pb (8);
+								self.userinfodiv.x ().a (list ([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.photourldiv, self.uidinfodiv]));
 								self.emailinput.setText (self.email);
-								self.database.ref (('users/' + self.uid) + '/lastseen').set (dict ({'timems': new Date ().getTime ()}));
+								self.displaynameinput.setText (self.displayName);
+								self.photourlinput.setText (self.photoURL);
+								if (self.photoURL) {
+									self.photodiv = Div ('photodiv').html ("<img src='{}'></img>".format (self.photoURL));
+									self.signupdiv.a (self.photodiv);
+								}
 							}
 							else {
 								print ('no user');
@@ -2411,6 +2428,9 @@ function app () {
 							}
 							self.authenabled = getrec ('global/auth/enabled', self.schemaconfig) == 'true';
 						});},
+						get startui () {return __get__ (this, function (self) {
+							self.ui.start ('#firebaseuidiv', self.uiConfig);
+						});},
 						get siores () {return __get__ (this, function (self, obj) {
 							print ('<-', obj);
 							if (__in__ ('kind', obj)) {
@@ -2425,7 +2445,7 @@ function app () {
 										self.database = firebase.database ();
 										firebase.auth ().onAuthStateChanged (self.authstatechanged);
 										self.initializefirebaseui ();
-										self.ui.start ('#firebaseuidiv', self.uiConfig);
+										setTimeout (self.startui, 2000);
 									}
 								}
 								else if (kind == 'configsaved') {
@@ -2437,6 +2457,12 @@ function app () {
 									setTimeout ((function __lambda__ () {
 										return window.alert ('Config set from cloud.');
 									}), 10);
+								}
+								else if (kind == 'alert') {
+									window.alert (obj ['data']);
+									if (obj ['reload']) {
+										location.reload ();
+									}
 								}
 							}
 						});},
