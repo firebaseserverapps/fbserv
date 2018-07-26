@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-25 19:43:45
+// Transcrypt'ed from Python, 2018-07-26 06:25:07
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2460,6 +2460,7 @@ function app () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'dom', {
@@ -2960,7 +2961,9 @@ function app () {
 					var Div = __init__ (__world__.dom).Div;
 					var ComboBox = __init__ (__world__.dom).ComboBox;
 					var TextInput = __init__ (__world__.dom).TextInput;
+					var Button = __init__ (__world__.dom).Button;
 					var getitem = __init__ (__world__.utils).getitem;
+					var clipboard = null;
 					var SCHEMA_DEFAULT_ARGS = list ([list (['kind', 'scalar']), list (['disposition', 'string']), list (['constraint', null]), list (['key', null]), list (['value', '']), list (['childsarg', list ([])]), list (['childsopened', false])]);
 					var iscollection = function (schema) {
 						if (schema) {
@@ -2983,7 +2986,7 @@ function app () {
 					var Schema = __class__ ('Schema', [e], {
 						__module__: __name__,
 						get copydivclicked () {return __get__ (this, function (self) {
-							print (self.tojsontext ());
+							clipboard = self.toargs ();
 						});},
 						get openbuttonclicked () {return __get__ (this, function (self) {
 							self.childsopened = !(self.childsopened);
@@ -3008,6 +3011,32 @@ function app () {
 						get keyinputchanged () {return __get__ (this, function (self) {
 							self.key = self.keyinput.getText ();
 						});},
+						get deletechild () {return __get__ (this, function (self, child) {
+							var newchilds = list ([]);
+							var __iterable0__ = self.childs;
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var currchild = __iterable0__ [__index0__];
+								if (!(currchild == child)) {
+									newchilds.append (currchild);
+								}
+								else {
+									clipboard = child.toargs ();
+								}
+							}
+							self.childs = newchilds;
+							self.build ();
+						});},
+						get deletedivclicked () {return __get__ (this, function (self) {
+							self.parent.deletechild (self);
+						});},
+						get pastebuttonpushed () {return __get__ (this, function (self) {
+							if (clipboard) {
+								clipboard ['parent'] = self;
+								var sch = Schema (clipboard);
+								self.childs.append (sch);
+								self.build ();
+							}
+						});},
 						get build () {return __get__ (this, function (self) {
 							self.x ().ac ('schema');
 							self.itemdiv = Div (list (['item', self.disposition]));
@@ -3021,7 +3050,6 @@ function app () {
 							}
 							self.helpdiv = Div (list (['box', 'help'])).html ('?');
 							self.copydiv = Div (list (['box', 'copy'])).html ('C').ae ('mousedown', self.copydivclicked);
-							self.deletediv = Div (list (['box', 'delete'])).html ('X');
 							if (isdict (self.parent)) {
 								self.keydiv = Div ('key');
 								self.keyinput = TextInput ().ac ('key').setText (self.key);
@@ -3029,7 +3057,11 @@ function app () {
 								self.keydiv.a (self.keyinput);
 								self.itemdiv.a (self.keydiv);
 							}
-							self.itemdiv.a (list ([self.valuediv, self.helpdiv, self.copydiv, self.deletediv]));
+							self.itemdiv.a (list ([self.valuediv, self.helpdiv, self.copydiv]));
+							if (self.parent) {
+								self.deletediv = Div (list (['box', 'delete'])).html ('X').ae ('mousedown', self.deletedivclicked);
+								self.itemdiv.a (self.deletediv);
+							}
 							if (iscollection (self)) {
 								self.openbutton = Div ('openbutton').ae ('mousedown', self.openbuttonclicked);
 								self.valuediv.a (self.openbutton);
@@ -3040,6 +3072,8 @@ function app () {
 								var cc = self.createcombo;
 								self.createcombo = ComboBox ().setoptions (list ([list (['create', 'Create new']), list (['scalar', 'Scalar']), list (['dict', 'Dict']), list (['list', 'List'])]), 'create', self.createcombochanged).ac ('createcombo');
 								self.creatediv.a (self.createcombo);
+								self.pastebutton = Button ('Paste', self.pastebuttonpushed).ac ('pastebutton');
+								self.creatediv.a (self.pastebutton);
 								self.childsdiv.a (self.creatediv);
 								var __iterable0__ = self.childs;
 								for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
@@ -3097,12 +3131,14 @@ function app () {
 						'utils' +
 					'</use>')
 					__pragma__ ('<all>')
+						__all__.Button = Button;
 						__all__.ComboBox = ComboBox;
 						__all__.Div = Div;
 						__all__.SCHEMA_DEFAULT_ARGS = SCHEMA_DEFAULT_ARGS;
 						__all__.Schema = Schema;
 						__all__.TextInput = TextInput;
 						__all__.__name__ = __name__;
+						__all__.clipboard = clipboard;
 						__all__.e = e;
 						__all__.getitem = getitem;
 						__all__.iscollection = iscollection;
@@ -3113,7 +3149,6 @@ function app () {
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'utils', {
