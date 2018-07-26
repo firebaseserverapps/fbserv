@@ -49,6 +49,17 @@ class Client:
             lambda error: window.alert("{}".format(error))
         )
 
+    def updatedetailscallback(self):
+        userdetails = {
+            "displayname": self.displaynameinput.getText(),
+            "photourl": self.photourlinput.getText()
+        }
+        self.sioreq({
+            "kind": "updateuserdetails",
+            "uid": self.uid,
+            "userdetails": userdetails
+        })
+
     def buildsignupdiv(self):
         self.signupdiv = Div()
         self.signupmaildiv = Div("signupmaildiv")
@@ -63,7 +74,14 @@ class Client:
         self.resetpasswordbutton = Button("Reset password", self.resetpasswordcallback)
         self.userinfodiv = Div("userinfodiv")
         self.signupmaildiv.a([self.emaillabel, self.emailinput, self.passwordlabel, self.passwordinput, self.signinbutton, self.signoutbutton, self.signupbutton, self.sendverificationbutton, self.resetpasswordbutton])        
-        self.signupdiv.a([self.signupmaildiv, self.userinfodiv])
+        self.userdetailsdiv = Div("userdetailsdiv")
+        self.displaynamelabel = Span().html("Display name:")
+        self.displaynameinput = TextInput().ac("profiletextinput").w(250)
+        self.photourllabel = Span().html("Photo url:")        
+        self.photourlinput = TextInput().ac("profiletextinput").w(250)
+        self.updatedetailsbutton = Button("Update details", self.updatedetailscallback)
+        self.userdetailsdiv.a([self.displaynamelabel, self.displaynameinput, self.photourllabel, self.photourlinput, self.updatedetailsbutton])
+        self.signupdiv.a([self.signupmaildiv, self.userdetailsdiv, self.userinfodiv])                
         self.firebaseuidiv = Div().sa("id", "firebaseuidiv")        
         self.signupdiv.a(self.firebaseuidiv)
 
@@ -175,12 +193,15 @@ class Client:
             self.nameinfodiv = Div().html("name : <span class='{}'>{}</span>".format(cpick(self.displayName, "uiinfo", "uiinfored"), getelse(self.displayName,"&lt;NA&gt;"))).pt(5)
             self.emailinfodiv = Div().html("email : <span class='{}'>{}</span>".format(cpick(self.email, "uiinfo", "uiinfored"), getelse(self.email, "&lt;NA&gt;")))
             self.verifiedinfodiv = Div().html("status : <span class='{}'>{}</span>".format(cpick(self.userverified(), "uiinfo", "uiinfored"), self.userstatusverbal()))            
-            self.uidinfodiv = Div().html("uid : <span class='uiinfo'>{}</span>".format(self.uid)).pb(5)
-            self.userinfodiv.x().a([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.uidinfodiv])
-            self.emailinput.setText(self.email)            
-            self.database.ref("users/" + self.uid + "/lastseen").set({
-                "timems": (__new__(Date())).getTime()
-            })
+            self.photourldiv = Div().html("photo url : <span class='{}'>{}</span>".format(cpick(self.photoURL, "uiinfo", "uiinfored"), getelse(self.photoURL,"&lt;NA&gt;")))
+            self.uidinfodiv = Div().html("uid : <span class='uiinfo'>{}</span>".format(self.uid)).pb(8)
+            self.userinfodiv.x().a([self.nameinfodiv, self.emailinfodiv, self.verifiedinfodiv, self.photourldiv, self.uidinfodiv])
+            self.emailinput.setText(self.email)        
+            self.displaynameinput.setText(self.displayName)                
+            self.photourlinput.setText(self.photoURL)                
+            if self.photoURL:
+                self.photodiv = Div("photodiv").html("<img src='{}'></img>".format(self.photoURL))
+                self.signupdiv.a(self.photodiv)
         else:
             print("no user")
             self.userinfodiv.x().a([
@@ -214,6 +235,9 @@ class Client:
             self.schemaconfig = obj["schemaconfig"]            
         self.authenabled = ( getrec("global/auth/enabled", self.schemaconfig) == "true" )
 
+    def startui(self):
+        self.ui.start('#firebaseuidiv', self.uiConfig)
+
     def siores(self, obj):
         print("<-", obj)
         if "kind" in obj:
@@ -228,13 +252,17 @@ class Client:
                     self.database = firebase.database()
                     firebase.auth().onAuthStateChanged(self.authstatechanged)
                     self.initializefirebaseui()
-                    self.ui.start('#firebaseuidiv', self.uiConfig)                                           
+                    setTimeout(self.startui, 2000)
             elif kind == "configsaved":
                 window.alert("Config saved, {} characters".format(obj["size"]))
             elif kind == "setcloudconfig":
                 self.getschemaconfigfromobj(obj)
                 self.build()
                 setTimeout(lambda: window.alert("Config set from cloud."), 10)
+            elif kind == "alert":
+                window.alert(obj["data"])
+                if obj["reload"]:
+                    location.reload()
 
     def startup(self):
         print("creating socket {}".format(SUBMIT_URL))

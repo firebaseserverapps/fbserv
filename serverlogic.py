@@ -1,5 +1,5 @@
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials, db, auth
 
 import json
 
@@ -46,6 +46,41 @@ def serverlogic(reqobj):
                         "schemaconfig": data
                     }
                 except:
+                    print_exc(file = sys.stderr)
+            elif kind == "updateuserdetails":
+                try:
+                    uid = reqobj["uid"]
+                    userdetails = reqobj["userdetails"]
+                    displayname = userdetails["displayname"]
+                    photourl = userdetails["photourl"]                    
+                    if not ( displayname == "" ):
+                        auth.update_user(
+                            uid,
+                            display_name = displayname                        
+                        )
+                    if not ( photourl == "" ):
+                        auth.update_user(
+                            uid,
+                            photo_url = photourl
+                        )
+                    else:
+                        photourl = None
+                        auth.update_user(
+                            uid,
+                            photo_url = None
+                        )
+                    msg = "Updated user [{}] with display name [{}] and photo url [{}].".format(uid, displayname, photourl)
+                    print(msg)
+                    resobj = {
+                        "kind": "alert",
+                        "reload": True,
+                        "data": msg
+                    }
+                except:
+                    resobj = {
+                        "kind": "alert",
+                        "data": "There was a problem updating user details."
+                    }
                     print_exc(file = sys.stderr)
 
     except:

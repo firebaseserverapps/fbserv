@@ -26,7 +26,24 @@
     display: flex; justify-content: space-around; align-items: center; flex-flow: column;
     margin: 5px;
     width: calc(100% - 10px);
-    height: 85px;
+    height: 100px;
+    background-color: #ffe;    
+    font-family: monospace;
+}
+
+.userdetailsdiv {
+    display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;
+    margin: 5px;
+    width: calc(100% - 10px);
+    height: 60px;
+    background-color: #eee;
+    font-size: 10px;
+}
+
+.photodiv {
+    display: flex; justify-content: space-around; align-items: center; flex-flow: column;
+    margin: 5px;
+    width: calc(100% - 10px);    
     background-color: #ffe;    
     font-family: monospace;
 }
