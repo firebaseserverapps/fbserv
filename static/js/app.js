@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-26 06:25:07
+// Transcrypt'ed from Python, 2018-07-26 14:48:38
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2211,6 +2211,7 @@ function app () {
 					var ge = __init__ (__world__.utils).ge;
 					var cpick = __init__ (__world__.utils).cpick;
 					var getelse = __init__ (__world__.utils).getelse;
+					var getrec = __init__ (__world__.utils).getrec;
 					var Div = __init__ (__world__.dom).Div;
 					var Span = __init__ (__world__.dom).Span;
 					var TextInput = __init__ (__world__.dom).TextInput;
@@ -2309,6 +2310,9 @@ function app () {
 							self.root.innerHTML = '';
 							self.buildconfigdiv ();
 							self.signupdiv = Div ();
+							if (self.authenabled) {
+								self.buildsignupdiv ();
+							}
 							self.profiletab = Tab ('profile', 'Profile', self.signupdiv);
 							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('config', 'Config', self.configdiv), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'config'}));
 							self.root.appendChild (self.mainelement.e);
@@ -2405,6 +2409,7 @@ function app () {
 							if (__in__ ('schemaconfig', obj)) {
 								self.schemaconfig = obj ['schemaconfig'];
 							}
+							self.authenabled = getrec ('global/auth/enabled', self.schemaconfig) == 'true';
 						});},
 						get siores () {return __get__ (this, function (self, obj) {
 							print ('<-', obj);
@@ -2413,6 +2418,15 @@ function app () {
 								if (kind == 'connectedack') {
 									self.getschemaconfigfromobj (obj);
 									self.build ();
+									if (self.authenabled) {
+										self.firebaseconfig = obj ['firebaseconfig'];
+										print ('initializing firebase from', self.firebaseconfig);
+										firebase.initializeApp (self.firebaseconfig);
+										self.database = firebase.database ();
+										firebase.auth ().onAuthStateChanged (self.authstatechanged);
+										self.initializefirebaseui ();
+										self.ui.start ('#firebaseuidiv', self.uiConfig);
+									}
 								}
 								else if (kind == 'configsaved') {
 									window.alert ('Config saved, {} characters'.format (obj ['size']));
@@ -2455,12 +2469,12 @@ function app () {
 						__all__.cpick = cpick;
 						__all__.ge = ge;
 						__all__.getelse = getelse;
+						__all__.getrec = getrec;
 					__pragma__ ('</all>')
 				}
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'dom', {
@@ -3149,6 +3163,7 @@ function app () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'utils', {
@@ -3163,6 +3178,25 @@ function app () {
 						var ws_scheme = 'ws://';
 					}
 					var SUBMIT_URL = ws_scheme + window.location.host;
+					var getrec = function (path, currobj) {
+						var parts = path.py_split ('/');
+						var key = parts [0];
+						if (currobj ['disposition'] == 'dict') {
+							var __iterable0__ = currobj ['childsarg'];
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var child = __iterable0__ [__index0__];
+								if (child ['key'] == key) {
+									if (len (parts) == 1) {
+										return child ['value'];
+									}
+									else {
+										return getrec ('/'.join (parts.__getslice__ (1, null, 1)), child);
+									}
+								}
+							}
+						}
+						return null;
+					};
 					var getitem = function (obj, key, py_default) {
 						if (__in__ (key, obj)) {
 							return obj [key];
@@ -3211,6 +3245,7 @@ function app () {
 						__all__.getScrollBarWidth = getScrollBarWidth;
 						__all__.getelse = getelse;
 						__all__.getitem = getitem;
+						__all__.getrec = getrec;
 						__all__.ws_scheme = ws_scheme;
 					__pragma__ ('</all>')
 				}
