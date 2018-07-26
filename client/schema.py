@@ -1,5 +1,7 @@
-from dom import e, Div, ComboBox, TextInput
+from dom import e, Div, ComboBox, TextInput, Button
 from utils import getitem
+
+clipboard = None
 
 SCHEMA_DEFAULT_ARGS = [
     [ "kind", "scalar" ],
@@ -26,9 +28,10 @@ def islist(schema):
         return schema.disposition == "list"
     return False
 
-class Schema(e):
+class Schema(e):    
     def copydivclicked(self):
-        print(self.tojsontext())
+        global clipboard
+        clipboard = self.toargs()
 
     def openbuttonclicked(self):
         self.childsopened = not self.childsopened
@@ -61,6 +64,28 @@ class Schema(e):
     def keyinputchanged(self):
         self.key = self.keyinput.getText()
 
+    def deletechild(self, child):
+        global clipboard
+        newchilds = []
+        for currchild in self.childs:
+            if not ( currchild == child ):
+                newchilds.append(currchild)
+            else:
+                clipboard = child.toargs()
+        self.childs = newchilds
+        self.build()
+
+    def deletedivclicked(self):
+        self.parent.deletechild(self)        
+
+    def pastebuttonpushed(self):
+        global clipboard        
+        if clipboard:
+            clipboard["parent"] = self
+            sch = Schema(clipboard)
+            self.childs.append(sch)
+            self.build()
+
     def build(self):
         self.x().ac("schema")
         self.itemdiv = Div(["item", self.disposition])        
@@ -71,15 +96,17 @@ class Schema(e):
                 self.stringvalueinput.ae("keyup", self.stringvalueinputchanged)
                 self.valuediv.a(self.stringvalueinput)
         self.helpdiv = Div(["box","help"]).html("?")
-        self.copydiv = Div(["box","copy"]).html("C").ae("mousedown", self.copydivclicked)
-        self.deletediv = Div(["box","delete"]).html("X")
+        self.copydiv = Div(["box","copy"]).html("C").ae("mousedown", self.copydivclicked)        
         if isdict(self.parent):
             self.keydiv = Div("key")
             self.keyinput = TextInput().ac("key").setText(self.key)
             self.keyinput.ae("keyup", self.keyinputchanged)
             self.keydiv.a(self.keyinput)
             self.itemdiv.a(self.keydiv)
-        self.itemdiv.a([self.valuediv, self.helpdiv, self.copydiv, self.deletediv])
+        self.itemdiv.a([self.valuediv, self.helpdiv, self.copydiv])
+        if self.parent:
+            self.deletediv = Div(["box","delete"]).html("X").ae("mousedown", self.deletedivclicked)
+            self.itemdiv.a(self.deletediv)
         if iscollection(self):
             self.openbutton = Div("openbutton").ae("mousedown", self.openbuttonclicked)
             self.valuediv.a(self.openbutton)   
@@ -94,6 +121,8 @@ class Schema(e):
                 [ "list" , "List"]
             ], "create", self.createcombochanged).ac("createcombo")
             self.creatediv.a(self.createcombo)
+            self.pastebutton = Button("Paste", self.pastebuttonpushed).ac("pastebutton")
+            self.creatediv.a(self.pastebutton)
             self.childsdiv.a(self.creatediv)
             for child in self.childs:
                 self.childsdiv.a(child)

@@ -20,6 +20,10 @@
     padding: 2px;    
 }
 
+.schema .pastebutton {
+    font-size: calc(var(--schema-font-size) * 0.8);        
+}
+
 .schema .item.list {
     border: 2px dotted #9aa;
     padding: 0px;
