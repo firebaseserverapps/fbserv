@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-27 12:57:47
+// Transcrypt'ed from Python, 2018-07-27 13:00:31
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2502,6 +2502,7 @@ function app () {
 			}
 		}
 	);
+
 	__nest__ (
 		__all__,
 		'dom', {
