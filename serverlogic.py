@@ -94,12 +94,15 @@ def serverlogic(reqobj):
                     print("upload", blobpath)
                     blob = bucket.blob(blobpath)
                     blob.upload_from_filename(savepath)
+                    blob.make_public()
+                    medialink = blob.media_link
                     resobj = {
                         "success": True,
                         "filename": filename,
                         "savefilename": savefilename,
                         "savepath": savepath,
-                        "blobpath": blobpath
+                        "blobpath": blobpath,
+                        "medialink": medialink
                     }
                 except:
                     print_exc(file = sys.stderr)

@@ -127,7 +127,7 @@ class FileUploader(e):
             json = JSON.parse(content)
             if json["success"]:
                 path = "/uploads/{}".format(json["savefilename"])                
-                self.log("uploaded <span class='fileuploadfilename'>{}</span> <a href='{}' target='_blank' rel='noopener noreferrer'>{}</a>".format(json["filename"], path, path))    
+                self.log("uploaded <span class='fileuploadfilename'>{}</span> <a href='{}' target='_blank' rel='noopener noreferrer'>{}</a> <br> <font size='2'> media link <a href='{}' target='_blank' rel='noopener noreferrer'>{}</a> </font>".format(json["filename"], path, path, json["medialink"], json["medialink"]))    
             else:
                 self.log("File upload failed.", json["status"])
         except:            
