@@ -1,6 +1,6 @@
 from utils import SUBMIT_URL, ge, cpick, getelse, getrec
 from dom import Div, Span, TextInput, PasswordInput, Button
-from widgets import TabPane, Tab
+from widgets import TabPane, Tab, FileUploader
 from schema import Schema
 
 ######################################################
@@ -123,11 +123,12 @@ class Client:
             "tabs": [
                 Tab("main", "Main", Div("contentplaceholder").html("Main.")),
                 Tab("config", "Config", self.configdiv),
+                Tab("upload", "Upload", FileUploader({"url": "/upload"})),
                 Tab("log", "Log", Div("contentplaceholder").html("Log.")),
                 self.profiletab,
                 Tab("about", "About", Div("contentplaceholder").html("About."))
             ],
-            "selected": "config"
+            "selected": "upload"
         })        
         self.root.appendChild(self.mainelement.e)
 

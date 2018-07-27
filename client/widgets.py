@@ -1,4 +1,4 @@
-from dom import e, Div
+from dom import e, Div, P, Form, FileInput, Label
 from utils import getScrollBarWidth
 
 ######################################################
@@ -98,4 +98,105 @@ class TabPane(SplitPane):
             if tab.key == self.selected:
                 self.setcontentelement(tab.element)            
         return self
+
+#https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
+
+class FileUploader(e):
+    def fileinputchanged(self):
+        self.files = self.fileinput.files()
+        self.handlefiles()
+
+    def preventdefaults(self, ev):
+        ev.preventDefault()
+        ev.stopPropagation()
+
+    def highlight(self):
+        self.droparea.ac("highlight")
+
+    def unhighlight(self):
+        self.droparea.rc("highlight")
+
+    def log(self, html):
+        self.infoitems.append(html)
+        self.infoitems.reverse()
+        self.info.html("<br>".join(self.infoitems))
+        self.infoitems.reverse()
+
+    def loginfo(self, content):
+        try:
+            json = JSON.parse(content)
+            if json["success"]:
+                path = "/uploads/{}".format(json["savefilename"])                
+                self.log("uploaded <span class='fileuploadfilename'>{}</span> <a href='{}' target='_blank' rel='noopener noreferrer'>{}</a>".format(json["filename"], path, path))    
+            else:
+                self.log("File upload failed.", json["status"])
+        except:            
+            self.log("Error parsing response as JSON.")
+
+    def uploadfile(self, file):        
+        if self.url is None:
+            print("no upload url")
+            return
+
+        formdata = __new__ (FormData())
+
+        formdata.append('files', file)
+
+        __pragma__("jsiter")
+
+        args = {
+            "method": 'POST',
+            "body": formdata
+        }
+
+        __pragma__("nojsiter")
+
+        fetch(self.url, args).then(
+            lambda response: response.text().then(
+                lambda content: self.loginfo(content),
+                lambda err: self.loginfo(err)    
+            ),
+            lambda err: self.loginfo(err)
+        )
+
+    def handlefiles(self, files = self.files):
+        for i in range(files.length):
+            print("uploading file {}".format(i))
+            self.uploadfile(files.item(i))
+
+    def handledrop(self, ev):
+        self.dt = ev.dataTransfer
+        self.files = self.dt.files
+
+        self.handlefiles()
+
+    def build(self):
+        self.x()
+        self.droparea = Div("fileuploaddroparea")
+        self.form = Form().ac("fileuploadform")
+        self.desc = P().ac("fileuploadp").html("Upload {}s with the file dialog or by dragging and dropping them onto the dashed region".format(self.acceptdisplay))
+        self.fileinput = FileInput().ac("fileuploadfileelem").setmultiple(self.multiple).setaccept(self.accept)        
+        self.fileinput.sa("id", "fileinputelement")
+        self.fileinput.ae("change", self.fileinputchanged)
+        self.button = Label().ac("fileuploadbutton").sa("for", "fileinputelement").html("Select some {}s".format(self.acceptdisplay))
+        self.form.a([self.desc, self.fileinput, self.button])
+        self.droparea.a(self.form)
+        for eventname in ["dragenter", "dragover", "dragleave", "drop"]:
+            self.droparea.ae(eventname, self.preventdefaults)
+        for eventname in ["dragenter", "dragover"]:
+            self.droparea.ae(eventname, self.highlight)
+        for eventname in ["dragleave", "drop"]:
+            self.droparea.ae(eventname, self.unhighlight)
+        self.droparea.ae("drop", self.handledrop)
+        self.info = Div("fileuploadinfo")
+        self.infoitems = []
+        self.a([self.droparea, self.info])
+
+    def __init__(self, args = {}):
+        super().__init__("div")
+        self.url = args.get("url", None)
+        self.multiple = args.get("multiple", True)
+        self.accept = args.get("accept", "image/*")
+        self.acceptdisplay = args.get("acceptdisplay", "image")
+        self.build()
 ######################################################

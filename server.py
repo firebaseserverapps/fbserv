@@ -3,6 +3,8 @@
 import random
 import json
 import sys
+import os
+import uuid
 from traceback import print_exc
 #########################################################
 
@@ -15,13 +17,15 @@ from utils.misc import read_yaml_from_file, read_json_from_file, postjson
 
 #########################################################
 # flask imports
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response, send_from_directory
 #########################################################
 
 #########################################################
 # create app
 app = Flask(__name__, static_url_path = '/static')
 app.config['SECRET_KEY'] = 'secret!'
+app.config['UPLOAD_FOLDER'] = 'upload'
+app.config['DOWNLOAD_FOLDER'] = 'download'
 #########################################################
 
 #########################################################
@@ -57,6 +61,38 @@ def tos():
 def index():
     printreq(request)
     return render_template("index.html", config = config)
+
+@app.route("/upload", methods = ["POST"])
+def upload():
+    if 'files' not in request.files:            
+        return Response(json.dumps({
+            "success": False,
+            "status": "no file input"
+        }), content_type = "application/json")
+    file = request.files['files']
+    if file:            
+        filename = file.filename
+        parts = filename.split(".")            
+        savefilename = uuid.uuid1().hex + "." + parts[-1]            
+        savepath = os.path.join(app.config['UPLOAD_FOLDER'], savefilename)
+        file.save(savepath)            
+        simpleresponsecontent = postjson("http://localhost:4000", {
+            "kind": "saveupload",
+            "filename": filename,
+            "savefilename": savefilename,
+            "savepath": savepath
+        })                
+        return Response(simpleresponsecontent, content_type = "application/json")
+
+@app.route("/uploads/<path:path>")
+def serve_uploaded_file(path):        
+    filepath = os.path.join(app.config['DOWNLOAD_FOLDER'], path)    
+    postjson("http://localhost:4000", {
+        "kind": "getupload",
+        "filepath": filepath,
+        "filename": path
+    })                
+    return send_from_directory('.', "download/{}".format(path))
 #########################################################
 
 #########################################################

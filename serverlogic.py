@@ -1,5 +1,5 @@
 import firebase_admin
-from firebase_admin import credentials, db, auth
+from firebase_admin import credentials, db, auth, storage
 
 import json
 
@@ -10,9 +10,12 @@ from traceback import print_exc
 try:
     cred = credentials.Certificate('firebase/fbsacckey.json')
     default_app = firebase_admin.initialize_app(cred, {
-        "databaseURL": "https://fbserv-36b3e.firebaseio.com"
+        "databaseURL": "https://fbserv-36b3e.firebaseio.com",
+        "storageBucket": "fbserv-36b3e.appspot.com"
     })
+    bucket = storage.bucket(app = default_app)
 except:
+    #print_exc(file = sys.stderr)
     print("firebase could not be initialized")
 
 def serverlogic(reqobj):
@@ -82,7 +85,47 @@ def serverlogic(reqobj):
                         "data": "There was a problem updating user details."
                     }
                     print_exc(file = sys.stderr)
-
+            elif kind == "saveupload":
+                try:
+                    filename = reqobj["filename"]
+                    savefilename = reqobj["savefilename"]
+                    savepath = reqobj["savepath"]
+                    blobpath = "uploads/{}".format(savefilename)
+                    print("upload", blobpath)
+                    blob = bucket.blob(blobpath)
+                    blob.upload_from_filename(savepath)
+                    resobj = {
+                        "success": True,
+                        "filename": filename,
+                        "savefilename": savefilename,
+                        "savepath": savepath,
+                        "blobpath": blobpath
+                    }
+                except:
+                    print_exc(file = sys.stderr)
+                    resobj = {
+                        "success": False,
+                        "status": "could not upload file"
+                    }
+            elif kind == "getupload":
+                try:
+                    filepath = reqobj["filepath"]
+                    filename = reqobj["filename"]
+                    blobpath = "uploads/{}".format(filename)
+                    print("download", blobpath)
+                    blob = bucket.blob(blobpath)
+                    blob.download_to_filename(filepath)
+                    resobj = {
+                        "success": True,
+                        "filename": filename,
+                        "filepath": filepath,
+                        "blobpath": blobpath
+                    }
+                except:
+                    resobj = {
+                        "success": False,
+                        "status": "could not download file"
+                    }
     except:
         print_exc(file = sys.stderr)
     return resobj
