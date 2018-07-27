@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-27 12:12:28
+// Transcrypt'ed from Python, 2018-07-27 12:57:47
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2443,7 +2443,6 @@ function app () {
 										self.firebaseconfig = obj ['firebaseconfig'];
 										print ('initializing firebase from', self.firebaseconfig);
 										firebase.initializeApp (self.firebaseconfig);
-										self.database = firebase.database ();
 										firebase.auth ().onAuthStateChanged (self.authstatechanged);
 										self.initializefirebaseui ();
 										setTimeout (self.startui, 2000);
