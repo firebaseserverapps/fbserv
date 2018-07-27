@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-27 18:52:08
+// Transcrypt'ed from Python, 2018-07-27 20:44:42
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2436,12 +2436,7 @@ function app () {
 							self.uiConfig = dict ({'signInSuccessUrl': '/', 'signInOptions': list ([firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.PROVIDER_ID]), 'tosUrl': '/tos'});
 							print ('initializing firebase ui from', self.uiConfig);
 							self.ui = new firebaseui.auth.AuthUI (firebase.auth ());
-							if (!(document.querySelector ('#firebaseuidiv'))) {
-								self.firebaseuidiv.html ('Refresh page if provider login does not appear here!');
-							}
-							else {
-								self.ui.start ('#firebaseuidiv', self.uiConfig);
-							}
+							self.ui.start (self.firebaseuidiv.e, self.uiConfig);
 						});},
 						get startfirebase () {return __get__ (this, function (self) {
 							self.initializefirebase ();
@@ -2456,7 +2451,7 @@ function app () {
 									self.build ();
 									if (self.authenabled) {
 										self.firebaseconfig = obj ['firebaseconfig'];
-										setTimeout (self.startfirebase, 1000);
+										setTimeout (self.startfirebase, 50);
 									}
 								}
 								else if (kind == 'configsaved') {
