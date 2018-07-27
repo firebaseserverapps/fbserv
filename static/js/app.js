@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-27 18:30:53
+// Transcrypt'ed from Python, 2018-07-27 18:52:08
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2388,6 +2388,7 @@ function app () {
 						});},
 						get authstatechanged () {return __get__ (this, function (self, user) {
 							self.user = user;
+							self.passwordinput.setText ('');
 							if (user) {
 								self.displayName = user.displayName;
 								self.email = user.email;
