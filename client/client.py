@@ -249,8 +249,7 @@ class Client:
                 if self.authenabled:                
                     self.firebaseconfig = obj["firebaseconfig"]
                     print("initializing firebase from", self.firebaseconfig)
-                    firebase.initializeApp(self.firebaseconfig)
-                    self.database = firebase.database()
+                    firebase.initializeApp(self.firebaseconfig)                    
                     firebase.auth().onAuthStateChanged(self.authstatechanged)
                     self.initializefirebaseui()
                     setTimeout(self.startui, 2000)
