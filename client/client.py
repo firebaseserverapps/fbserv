@@ -182,6 +182,7 @@ class Client:
 
     def authstatechanged(self, user):        
         self.user = user
+        self.passwordinput.setText("")
         if user:        
             self.displayName = user.displayName
             self.email = user.email
