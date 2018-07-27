@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-27 13:00:31
+// Transcrypt'ed from Python, 2018-07-27 14:25:06
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -3444,7 +3444,7 @@ function app () {
 								var json = JSON.parse (content);
 								if (json ['success']) {
 									var path = '/uploads/{}'.format (json ['savefilename']);
-									self.log ("uploaded <span class='fileuploadfilename'>{}</span> <a href='{}' target='_blank' rel='noopener noreferrer'>{}</a>".format (json ['filename'], path, path));
+									self.log ("uploaded <span class='fileuploadfilename'>{}</span> <a href='{}' target='_blank' rel='noopener noreferrer'>{}</a> <br> <font size='2'> media link <a href='{}' target='_blank' rel='noopener noreferrer'>{}</a> </font>".format (json ['filename'], path, path, json ['medialink'], json ['medialink']));
 								}
 								else {
 									self.log ('File upload failed.', json ['status']);
@@ -3551,7 +3551,6 @@ function app () {
 			}
 		}
 	);
-
 	(function () {
 		var __name__ = '__main__';
 		var Client = __init__ (__world__.client).Client;
