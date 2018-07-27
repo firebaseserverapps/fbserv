@@ -243,10 +243,7 @@ class Client:
         }
         print("initializing firebase ui from", self.uiConfig)
         self.ui = __new__(firebaseui.auth.AuthUI(firebase.auth()))                
-        if not document.querySelector('#firebaseuidiv'):            
-            self.firebaseuidiv.html("Refresh page if provider login does not appear here!")
-        else:
-            self.ui.start('#firebaseuidiv', self.uiConfig)
+        self.ui.start(self.firebaseuidiv.e, self.uiConfig)
 
     def startfirebase(self):
         self.initializefirebase()
@@ -261,7 +258,7 @@ class Client:
                 self.build()
                 if self.authenabled:                
                     self.firebaseconfig = obj["firebaseconfig"]
-                    setTimeout(self.startfirebase, 1000)
+                    setTimeout(self.startfirebase, 50)
             elif kind == "configsaved":
                 window.alert("Config saved, {} characters".format(obj["size"]))
             elif kind == "setcloudconfig":

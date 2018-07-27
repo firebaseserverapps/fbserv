@@ -92,7 +92,10 @@ def check_client():
             "color": "BRIGHTCYAN",
             "verbose": True
         })
-        browser.refresh()
+        try:
+            browser.refresh()
+        except:
+            print("browser could not be refreshed")
 
 while True:
     check_client()
