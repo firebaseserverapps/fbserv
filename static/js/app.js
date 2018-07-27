@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-27 14:25:06
+// Transcrypt'ed from Python, 2018-07-27 18:08:11
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2297,7 +2297,8 @@ function app () {
 							self.photourlinput = TextInput ().ac ('profiletextinput').w (250);
 							self.updatedetailsbutton = Button ('Update details', self.updatedetailscallback);
 							self.userdetailsdiv.a (list ([self.displaynamelabel, self.displaynameinput, self.photourllabel, self.photourlinput, self.updatedetailsbutton]));
-							self.signupdiv.a (list ([self.signupmaildiv, self.userdetailsdiv, self.userinfodiv]));
+							self.photodiv = Div ('photodiv');
+							self.signupdiv.a (list ([self.signupmaildiv, self.userdetailsdiv, self.userinfodiv, self.photodiv]));
 							self.firebaseuidiv = Div ().sa ('id', 'firebaseuidiv');
 							self.signupdiv.a (self.firebaseuidiv);
 						});},
@@ -2406,9 +2407,9 @@ function app () {
 								self.emailinput.setText (self.email);
 								self.displaynameinput.setText (self.displayName);
 								self.photourlinput.setText (self.photoURL);
+								self.photodiv.x ();
 								if (self.photoURL) {
-									self.photodiv = Div ('photodiv').html ("<img src='{}'></img>".format (self.photoURL));
-									self.signupdiv.a (self.photodiv);
+									self.photodiv.html ("<img src='{}'></img>".format (self.photoURL));
 								}
 							}
 							else {
@@ -2418,10 +2419,6 @@ function app () {
 							self.setprofiletab ();
 							self.userinfodiv.fs (cpick (self.user, 10, 14));
 						});},
-						get initializefirebaseui () {return __get__ (this, function (self) {
-							self.uiConfig = dict ({'signInSuccessUrl': '/', 'signInOptions': list ([firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.PROVIDER_ID]), 'tosUrl': '/tos'});
-							self.ui = new firebaseui.auth.AuthUI (firebase.auth ());
-						});},
 						get getschemaconfigfromobj () {return __get__ (this, function (self, obj) {
 							self.schemaconfig = dict ({'kind': 'collection', 'disposition': 'dict'});
 							if (__in__ ('schemaconfig', obj)) {
@@ -2429,8 +2426,20 @@ function app () {
 							}
 							self.authenabled = getrec ('global/auth/enabled', self.schemaconfig) == 'true';
 						});},
-						get startui () {return __get__ (this, function (self) {
+						get initializefirebase () {return __get__ (this, function (self) {
+							print ('initializing firebase from', self.firebaseconfig);
+							firebase.initializeApp (self.firebaseconfig);
+							firebase.auth ().onAuthStateChanged (self.authstatechanged);
+						});},
+						get initializefirebaseui () {return __get__ (this, function (self) {
+							self.uiConfig = dict ({'signInSuccessUrl': '/', 'signInOptions': list ([firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.PROVIDER_ID]), 'tosUrl': '/tos'});
+							print ('initializing firebase ui from', self.uiConfig);
+							self.ui = new firebaseui.auth.AuthUI (firebase.auth ());
 							self.ui.start ('#firebaseuidiv', self.uiConfig);
+						});},
+						get startfirebase () {return __get__ (this, function (self) {
+							self.initializefirebase ();
+							self.initializefirebaseui ();
 						});},
 						get siores () {return __get__ (this, function (self, obj) {
 							print ('<-', obj);
@@ -2441,11 +2450,7 @@ function app () {
 									self.build ();
 									if (self.authenabled) {
 										self.firebaseconfig = obj ['firebaseconfig'];
-										print ('initializing firebase from', self.firebaseconfig);
-										firebase.initializeApp (self.firebaseconfig);
-										firebase.auth ().onAuthStateChanged (self.authstatechanged);
-										self.initializefirebaseui ();
-										setTimeout (self.startui, 2000);
+										setTimeout (self.startfirebase, 1000);
 									}
 								}
 								else if (kind == 'configsaved') {
@@ -2502,7 +2507,6 @@ function app () {
 			}
 		}
 	);
-
 	__nest__ (
 		__all__,
 		'dom', {
@@ -3551,6 +3555,7 @@ function app () {
 			}
 		}
 	);
+
 	(function () {
 		var __name__ = '__main__';
 		var Client = __init__ (__world__.client).Client;
