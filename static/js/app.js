@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-26 18:49:54
+// Transcrypt'ed from Python, 2018-07-27 12:12:28
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2219,6 +2219,7 @@ function app () {
 					var Button = __init__ (__world__.dom).Button;
 					var TabPane = __init__ (__world__.widgets).TabPane;
 					var Tab = __init__ (__world__.widgets).Tab;
+					var FileUploader = __init__ (__world__.widgets).FileUploader;
 					var Schema = __init__ (__world__.schema).Schema;
 					var Client = __class__ ('Client', [object], {
 						__module__: __name__,
@@ -2325,7 +2326,7 @@ function app () {
 								self.buildsignupdiv ();
 							}
 							self.profiletab = Tab ('profile', 'Profile', self.signupdiv);
-							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('config', 'Config', self.configdiv), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'config'}));
+							self.mainelement = TabPane (dict ({'id': 'maintabpane', 'fillwindow': true, 'tabs': list ([Tab ('main', 'Main', Div ('contentplaceholder').html ('Main.')), Tab ('config', 'Config', self.configdiv), Tab ('upload', 'Upload', FileUploader (dict ({'url': '/upload'}))), Tab ('log', 'Log', Div ('contentplaceholder').html ('Log.')), self.profiletab, Tab ('about', 'About', Div ('contentplaceholder').html ('About.'))]), 'selected': 'upload'}));
 							self.root.appendChild (self.mainelement.e);
 						});},
 						get onconnect () {return __get__ (this, function (self) {
@@ -2484,6 +2485,7 @@ function app () {
 						__all__.Button = Button;
 						__all__.Client = Client;
 						__all__.Div = Div;
+						__all__.FileUploader = FileUploader;
 						__all__.PasswordInput = PasswordInput;
 						__all__.SUBMIT_URL = SUBMIT_URL;
 						__all__.Schema = Schema;
@@ -3288,6 +3290,10 @@ function app () {
 					var __name__ = 'widgets';
 					var e = __init__ (__world__.dom).e;
 					var Div = __init__ (__world__.dom).Div;
+					var P = __init__ (__world__.dom).P;
+					var Form = __init__ (__world__.dom).Form;
+					var FileInput = __init__ (__world__.dom).FileInput;
+					var Label = __init__ (__world__.dom).Label;
 					var getScrollBarWidth = __init__ (__world__.utils).getScrollBarWidth;
 					var SplitPane = __class__ ('SplitPane', [e], {
 						__module__: __name__,
@@ -3411,12 +3417,129 @@ function app () {
 							return self;
 						});}
 					});
+					var FileUploader = __class__ ('FileUploader', [e], {
+						__module__: __name__,
+						get fileinputchanged () {return __get__ (this, function (self) {
+							self.files = self.fileinput.files ();
+							self.handlefiles ();
+						});},
+						get preventdefaults () {return __get__ (this, function (self, ev) {
+							ev.preventDefault ();
+							ev.stopPropagation ();
+						});},
+						get highlight () {return __get__ (this, function (self) {
+							self.droparea.ac ('highlight');
+						});},
+						get unhighlight () {return __get__ (this, function (self) {
+							self.droparea.rc ('highlight');
+						});},
+						get log () {return __get__ (this, function (self, html) {
+							self.infoitems.append (html);
+							self.infoitems.reverse ();
+							self.info.html ('<br>'.join (self.infoitems));
+							self.infoitems.reverse ();
+						});},
+						get loginfo () {return __get__ (this, function (self, content) {
+							try {
+								var json = JSON.parse (content);
+								if (json ['success']) {
+									var path = '/uploads/{}'.format (json ['savefilename']);
+									self.log ("uploaded <span class='fileuploadfilename'>{}</span> <a href='{}' target='_blank' rel='noopener noreferrer'>{}</a>".format (json ['filename'], path, path));
+								}
+								else {
+									self.log ('File upload failed.', json ['status']);
+								}
+							}
+							catch (__except0__) {
+								self.log ('Error parsing response as JSON.');
+							}
+						});},
+						get uploadfile () {return __get__ (this, function (self, file) {
+							if (self.url === null) {
+								print ('no upload url');
+								return ;
+							}
+							var formdata = new FormData ();
+							formdata.append ('files', file);
+							var args = {'method': 'POST', 'body': formdata};
+							fetch (self.url, args).then ((function __lambda__ (response) {
+								return response.text ().then ((function __lambda__ (content) {
+									return self.loginfo (content);
+								}), (function __lambda__ (err) {
+									return self.loginfo (err);
+								}));
+							}), (function __lambda__ (err) {
+								return self.loginfo (err);
+							}));
+						});},
+						get handlefiles () {return __get__ (this, function (self, files) {
+							if (typeof files == 'undefined' || (files != null && files .hasOwnProperty ("__kwargtrans__"))) {;
+								var files = self.files;
+							};
+							for (var i = 0; i < files.length; i++) {
+								print ('uploading file {}'.format (i));
+								self.uploadfile (files.item (i));
+							}
+						});},
+						get handledrop () {return __get__ (this, function (self, ev) {
+							self.dt = ev.dataTransfer;
+							self.files = self.dt.files;
+							self.handlefiles ();
+						});},
+						get build () {return __get__ (this, function (self) {
+							self.x ();
+							self.droparea = Div ('fileuploaddroparea');
+							self.form = Form ().ac ('fileuploadform');
+							self.desc = P ().ac ('fileuploadp').html ('Upload {}s with the file dialog or by dragging and dropping them onto the dashed region'.format (self.acceptdisplay));
+							self.fileinput = FileInput ().ac ('fileuploadfileelem').setmultiple (self.multiple).setaccept (self.accept);
+							self.fileinput.sa ('id', 'fileinputelement');
+							self.fileinput.ae ('change', self.fileinputchanged);
+							self.button = Label ().ac ('fileuploadbutton').sa ('for', 'fileinputelement').html ('Select some {}s'.format (self.acceptdisplay));
+							self.form.a (list ([self.desc, self.fileinput, self.button]));
+							self.droparea.a (self.form);
+							var __iterable0__ = list (['dragenter', 'dragover', 'dragleave', 'drop']);
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var eventname = __iterable0__ [__index0__];
+								self.droparea.ae (eventname, self.preventdefaults);
+							}
+							var __iterable0__ = list (['dragenter', 'dragover']);
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var eventname = __iterable0__ [__index0__];
+								self.droparea.ae (eventname, self.highlight);
+							}
+							var __iterable0__ = list (['dragleave', 'drop']);
+							for (var __index0__ = 0; __index0__ < len (__iterable0__); __index0__++) {
+								var eventname = __iterable0__ [__index0__];
+								self.droparea.ae (eventname, self.unhighlight);
+							}
+							self.droparea.ae ('drop', self.handledrop);
+							self.info = Div ('fileuploadinfo');
+							self.infoitems = list ([]);
+							self.a (list ([self.droparea, self.info]));
+						});},
+						get __init__ () {return __get__ (this, function (self, args) {
+							if (typeof args == 'undefined' || (args != null && args .hasOwnProperty ("__kwargtrans__"))) {;
+								var args = dict ({});
+							};
+							__super__ (FileUploader, '__init__') (self, 'div');
+							self.url = args.py_get ('url', null);
+							self.multiple = args.py_get ('multiple', true);
+							self.accept = args.py_get ('accept', 'image/*');
+							self.acceptdisplay = args.py_get ('acceptdisplay', 'image');
+							self.build ();
+						});}
+					});
 					__pragma__ ('<use>' +
 						'dom' +
 						'utils' +
 					'</use>')
 					__pragma__ ('<all>')
 						__all__.Div = Div;
+						__all__.FileInput = FileInput;
+						__all__.FileUploader = FileUploader;
+						__all__.Form = Form;
+						__all__.Label = Label;
+						__all__.P = P;
 						__all__.SplitPane = SplitPane;
 						__all__.Tab = Tab;
 						__all__.TabPane = TabPane;
