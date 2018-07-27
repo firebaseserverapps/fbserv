@@ -1,5 +1,5 @@
 "use strict";
-// Transcrypt'ed from Python, 2018-07-27 18:08:11
+// Transcrypt'ed from Python, 2018-07-27 18:30:53
 function app () {
     var __symbols__ = ['__py3.6__', '__esv5__'];
     var __all__ = {};
@@ -2435,7 +2435,12 @@ function app () {
 							self.uiConfig = dict ({'signInSuccessUrl': '/', 'signInOptions': list ([firebase.auth.GoogleAuthProvider.PROVIDER_ID, firebase.auth.EmailAuthProvider.PROVIDER_ID]), 'tosUrl': '/tos'});
 							print ('initializing firebase ui from', self.uiConfig);
 							self.ui = new firebaseui.auth.AuthUI (firebase.auth ());
-							self.ui.start ('#firebaseuidiv', self.uiConfig);
+							if (!(document.querySelector ('#firebaseuidiv'))) {
+								self.firebaseuidiv.html ('Refresh page if provider login does not appear here!');
+							}
+							else {
+								self.ui.start ('#firebaseuidiv', self.uiConfig);
+							}
 						});},
 						get startfirebase () {return __get__ (this, function (self) {
 							self.initializefirebase ();
