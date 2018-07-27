@@ -81,7 +81,8 @@ class Client:
         self.photourlinput = TextInput().ac("profiletextinput").w(250)
         self.updatedetailsbutton = Button("Update details", self.updatedetailscallback)
         self.userdetailsdiv.a([self.displaynamelabel, self.displaynameinput, self.photourllabel, self.photourlinput, self.updatedetailsbutton])
-        self.signupdiv.a([self.signupmaildiv, self.userdetailsdiv, self.userinfodiv])                
+        self.photodiv = Div("photodiv")
+        self.signupdiv.a([self.signupmaildiv, self.userdetailsdiv, self.userinfodiv, self.photodiv])                
         self.firebaseuidiv = Div().sa("id", "firebaseuidiv")        
         self.signupdiv.a(self.firebaseuidiv)
 
@@ -200,9 +201,9 @@ class Client:
             self.emailinput.setText(self.email)        
             self.displaynameinput.setText(self.displayName)                
             self.photourlinput.setText(self.photoURL)                
+            self.photodiv.x()
             if self.photoURL:
-                self.photodiv = Div("photodiv").html("<img src='{}'></img>".format(self.photoURL))
-                self.signupdiv.a(self.photodiv)
+                self.photodiv.html("<img src='{}'></img>".format(self.photoURL))
         else:
             print("no user")
             self.userinfodiv.x().a([
@@ -211,6 +212,20 @@ class Client:
             ])
         self.setprofiletab()
         self.userinfodiv.fs(cpick(self.user, 10, 14))
+
+    def getschemaconfigfromobj(self, obj):
+        self.schemaconfig = {
+            "kind": "collection",
+            "disposition": "dict"
+        }
+        if "schemaconfig" in obj:
+            self.schemaconfig = obj["schemaconfig"]            
+        self.authenabled = ( getrec("global/auth/enabled", self.schemaconfig) == "true" )
+
+    def initializefirebase(self):
+        print("initializing firebase from", self.firebaseconfig)
+        firebase.initializeApp(self.firebaseconfig)                    
+        firebase.auth().onAuthStateChanged(self.authstatechanged)                    
 
     def initializefirebaseui(self):
         self.uiConfig = {
@@ -225,19 +240,13 @@ class Client:
             ],        
            "tosUrl": '/tos'
         }
-        self.ui = __new__(firebaseui.auth.AuthUI(firebase.auth()))        
-
-    def getschemaconfigfromobj(self, obj):
-        self.schemaconfig = {
-            "kind": "collection",
-            "disposition": "dict"
-        }
-        if "schemaconfig" in obj:
-            self.schemaconfig = obj["schemaconfig"]            
-        self.authenabled = ( getrec("global/auth/enabled", self.schemaconfig) == "true" )
-
-    def startui(self):
+        print("initializing firebase ui from", self.uiConfig)
+        self.ui = __new__(firebaseui.auth.AuthUI(firebase.auth()))                
         self.ui.start('#firebaseuidiv', self.uiConfig)
+
+    def startfirebase(self):
+        self.initializefirebase()
+        self.initializefirebaseui()
 
     def siores(self, obj):
         print("<-", obj)
@@ -248,11 +257,7 @@ class Client:
                 self.build()
                 if self.authenabled:                
                     self.firebaseconfig = obj["firebaseconfig"]
-                    print("initializing firebase from", self.firebaseconfig)
-                    firebase.initializeApp(self.firebaseconfig)                    
-                    firebase.auth().onAuthStateChanged(self.authstatechanged)
-                    self.initializefirebaseui()
-                    setTimeout(self.startui, 2000)
+                    setTimeout(self.startfirebase, 1000)
             elif kind == "configsaved":
                 window.alert("Config saved, {} characters".format(obj["size"]))
             elif kind == "setcloudconfig":
