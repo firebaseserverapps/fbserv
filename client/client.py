@@ -242,7 +242,10 @@ class Client:
         }
         print("initializing firebase ui from", self.uiConfig)
         self.ui = __new__(firebaseui.auth.AuthUI(firebase.auth()))                
-        self.ui.start('#firebaseuidiv', self.uiConfig)
+        if not document.querySelector('#firebaseuidiv'):            
+            self.firebaseuidiv.html("Refresh page if provider login does not appear here!")
+        else:
+            self.ui.start('#firebaseuidiv', self.uiConfig)
 
     def startfirebase(self):
         self.initializefirebase()
